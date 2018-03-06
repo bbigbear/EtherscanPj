@@ -32,11 +32,10 @@ body{padding: 10px;}
 				</div> 
 			</div>
 		</form>
-		<table id="dishList" lay-filter="room"></table>
-		<script type="text/html" id="barDemo">
-			<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">详情</a>
-			<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-		</script>
+		<blockquote class="layui-elem-quote" style="margin-top:10px;">Get Ether Balance for a single Address</blockquote>			
+		<table id="balanceList" lay-filter="room"></table>
+		<blockquote class="layui-elem-quote" style="margin-top:10px;">Get a list of 'Normal' Transactions By Address</blockquote>			
+		<table id="transactionList" lay-filter="transaction"></table>
 	</div>
 <br><br><br>
 
@@ -56,63 +55,41 @@ layui.use(['form','laydate','upload','jquery','layedit','element','table'], func
   	
 	//table 渲染
 	  table.render({
-	    elem: '#dishList'
-	    ,height: 315
-	    ,url: '/search'//数据接口
-	    ,page: true //开启分页
+	    elem: '#balanceList'
+	    ,height: 80
+	    ,url: '/search/balance'//数据接口
+	    //,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
-	      {field:'Stauts', title:'Status', width:120}
+	      {field:'Status', title:'Status', width:120}
 		  ,{field:'Message',  title:'Message', width:120}
-	      ,{field:'Result',  title:'Result', width:120}
-		  ,{fixed: 'right', title:'操作',width:200, align:'center', toolbar: '#barDemo'}
+	      ,{field:'Result',  title:'Result', width:300}
+	    ]]
+	  });
+	//table 渲染
+	  table.render({
+	    elem: '#transactionList'
+	    ,height: 300
+	    ,url: '/search/transaction'//数据接口
+	    ,page: true //开启分页
+		,id: 'listReload1'
+	    ,cols: [[ //表头
+	      {field:'blockNumber', title:'blockNumber', width:120}
+		  ,{field:'timeStamp',  title:'timeStamp', width:120}
+	      ,{field:'hash',  title:'hash', width:150}
+		  ,{field:'blockHash',  title:'blockHash', width:150}
+		  ,{field:'transactionIndex',  title:'transactionIndex', width:150}
+		  ,{field:'from',  title:'from', width:150}
+		  ,{field:'to',  title:'to', width:150}
+		  ,{field:'value',  title:'value', width:150}
+		  ,{field:'gas',  title:'gas', width:150}
+		  ,{field:'gasPrice',  title:'gasPrice', width:150}
+		  ,{field:'cumulativeGasUsed',  title:'cumulativeGasUsed', width:150}
+		  ,{field:'gasUsed',  title:'gasUsed', width:150}
+		  ,{field:'confirmations',  title:'confirmations', width:150}
 	    ]]
 	  });		
-		//监听工具条
-		table.on('tool(room)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
-		    var data = obj.data //获得当前行数据
-		    ,layEvent = obj.event; //获得 lay-event 对应的值
-		    if(layEvent === 'edit'){
-		      //layer.msg('查看操作');		
-			  layer.open({
-			  type: 2,
-			  title: '查看菜品',
-			  //closeBtn: 0, //不显示关闭按钮
-			  shadeClose: true,
-			  shade: false,
-			  area: ['893px', '600px'],
-			 // offset: 'rb', //右下角弹出
-			  //time: 2000, //2秒后自动关闭
-			  maxmin: true,
-			  anim: 2,
-			  content: ['/v1/restaurant_dish/edit?id='+data.Id+"&rid={{.id}}"], //iframe的url，no代表不显示滚动条
-			  cancel: function(index, layero){ 
-			  if(confirm('确定要关闭么')){ //只有当点击confirm框的确定时，该层才会关闭
-			    layer.close(index)
-				window.location.reload();
-			  }
-			  return false; 
-			  },
-		});
-	    } else if(layEvent === 'del'){
-	      layer.confirm('真的删除行么', function(index){
-	        var jsData={'id':data.Id}
-			$.post('/v1/restaurant_dish/del', jsData, function (out) {
-                if (out.code == 200) {
-                    layer.alert('删除成功了', {icon: 1},function(index){
-                        layer.close(index);
-                        table.reload({});
-                    });
-                } else {
-                    layer.msg(out.message)
-                }
-            }, "json");
-			obj.del(); //删除对应行（tr）的DOM结构
-	        layer.close(index);
-	        //向服务端发送删除指令
-	      });
-	    }
-	  });
+		
 
 	//点击查询	
 	$('#search').on('click',function(){
@@ -121,6 +98,12 @@ layui.use(['form','laydate','upload','jquery','layedit','element','table'], func
                         address:$("#account").val() ,
                     }
                 });
+				
+		table.reload('listReload1', {
+                    where: {
+                        address:$("#account").val() ,
+                    }
+                });		
 	});
 	
 	
