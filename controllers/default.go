@@ -110,12 +110,12 @@ func (this *MainController) GetBalanceResult() {
 	//获取address
 	address = this.Input().Get("address")
 	fmt.Println("address:", address)
-	if address == "" {
-		address = "0x6f46cf5569aefa1acc1009290c8e043747172d89"
-	}
+	//	if address == "" {
+	//		address = "0x6f46cf5569aefa1acc1009290c8e043747172d89"
+	//	}
 	var balance models.Balance
 
-	url = fmt.Sprintf("http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&sort=asc&apikey=%s", address, apikey)
+	url = fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=%s", address, apikey)
 	fmt.Println("url:", url)
 	r, err := http.Get(url)
 	if err != nil {

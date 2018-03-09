@@ -32,7 +32,7 @@ body{padding: 10px;}
 				</div> 
 			</div>
 		</form>
-		<blockquote class="layui-elem-quote" style="margin-top:10px;">Get Ether Balance for a single Address</blockquote>			
+		<blockquote class="layui-elem-quote" style="margin-top:10px;">Get ERC20-Token Account Balance for TokenContractAddress</blockquote>			
 		<table id="balanceList" lay-filter="room"></table>
 		<blockquote class="layui-elem-quote" style="margin-top:10px;">Get a list of 'Normal' Transactions By Address</blockquote>			
 		<table id="transactionList" lay-filter="transaction"></table>
