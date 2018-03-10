@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"strconv"
+	"time"
 
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
@@ -32,6 +35,7 @@ func (this *StockholderController) Get() {
 }
 
 func (this *StockholderController) GetEarlyWarn() {
+	this.TimeTask()
 	this.TplName = "early_warn.tpl"
 }
 
@@ -61,16 +65,16 @@ func (this *StockholderController) TimeTask() {
 	var maps []orm.Params
 	var sh_info models.Stockholder
 	//查询设置的数值
-	ew := new(models.EarlyWarn)
-	var maps_ew []orm.Params
-	num, err := o.QueryTable(ew).Values(&maps_ew)
-	for _, m := range maps_ew {
+	//	ew := new(models.EarlyWarn)
+	//	var maps_ew []orm.Params
+	//	num, err := o.QueryTable(ew).Values(&maps_ew)
+	//	for _, m := range maps_ew {
 
-	}
+	//	}
 
 	//每隔10分钟执行一次
 	tk1 := toolbox.NewTask("tk1", " 0 */10 * * * *", func() error {
-		//fmt.Println("tk1")
+		fmt.Println("10分钟执行一次")
 		//		nt := time.Now().Format("2016-01-02 15:04:05")
 		//		s, err := time.ParseInLocation("2006-01-02 15:04:05", nt, time.Local)
 		//		if err != nil {
@@ -84,7 +88,7 @@ func (this *StockholderController) TimeTask() {
 		for _, m := range maps {
 			//遍历列表中每一项
 			var balance models.Balance
-			url = fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=", m["ADDRESS"])
+			url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=", m["ADDRESS"])
 			//fmt.Println("url:", url)
 			r, err := http.Get(url)
 			if err != nil {
@@ -98,9 +102,70 @@ func (this *StockholderController) TimeTask() {
 			fmt.Println(string(res))
 			json.Unmarshal(res, &balance)
 			//get value
-			if m["Result"] != balance.Result {
+			result, err := strconv.ParseFloat(m["NUM"].(string), 64)
+			if err != nil {
+				fmt.Println("get result err")
+			}
+			last_result, err := strconv.ParseFloat(balance.Result, 64)
+			if err != nil {
+				fmt.Println("get last_result err")
+			}
+			if result != last_result {
 				//跟新数据库
-				//if
+				//				id, err := strconv.Atoi(m["ID"].(string))
+				//				if err != nil {
+				//					fmt.Println("get id err")
+				//				}
+				id := m["ID"].(int64)
+				sh_info.ID = id
+				sh_info.NUM = balance.Result
+				num, err := o.Update(&sh_info, "NUM")
+				if err != nil {
+					fmt.Println("get num", num)
+				}
+				var value, value_percent float64
+
+				if last_result > result {
+					value = (last_result - result) / 1000000000000000000
+					value_percent = value / result * 100
+
+				} else {
+					value = (result - last_result) / 1000000000000000000
+					value_percent = value / result * 100
+				}
+				if (value > 0.1) || (value_percent > 10) {
+					//根据地址获取网站交易信息
+					var transaction models.Transaction
+					tx_url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&page=1&offset=1&sort=asc&apikey=", m["ADDRESS"])
+					fmt.Println("tx_url:", tx_url)
+					r, err := http.Get(tx_url)
+					if err != nil {
+						fmt.Println("http.Get err", err)
+					}
+					res, err := ioutil.ReadAll(r.Body)
+					if err != nil {
+						fmt.Println("ioutil.ReadAll(r.Body) ", err)
+					}
+					defer r.Body.Close()
+					//fmt.Println(string(res))
+					json.Unmarshal(res, &transaction)
+					//时间戳转日期
+					dataTimeStr := time.Unix(transaction.TimeStamp, 0).Format("2006-01-02 15:04:05") //设置时间戳 使用模板格式化为日期字符串
+					//交易超过0.1或者超过30%，存入消息中
+					var nm models.Notifcation
+					nm.Target = m["ADDRESS"].(string)
+					nm.Style = "单笔交易"
+					nm.Num = value
+					nm.Percent = value_percent
+					nm.Time = dataTimeStr
+					nm.Hash = transaction.Hash
+					//插入数据库
+					num, err := o.Insert(&nm)
+					if err != nil {
+						fmt.Println("新增失败", err.Error())
+					}
+					fmt.Println("insert num:", num)
+				}
 			}
 		}
 		return nil

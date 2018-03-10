@@ -1,7 +1,7 @@
 package models
 
 type Balance struct {
-	Id      int
+	Id      int64
 	Address string
 	Status  string
 	Message string

@@ -29,6 +29,6 @@ func DBConnection() {
 
 func RegisterModel() {
 	fmt.Println("注册数据库模型")
-	orm.RegisterModel(new(models.Balance), new(models.Transaction), new(models.Stockholder))
+	orm.RegisterModel(new(models.Balance), new(models.Transaction), new(models.Stockholder), new(models.Notifcation))
 
 }

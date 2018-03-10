@@ -4,7 +4,7 @@ type Transaction struct {
 	Id                int
 	Address           string
 	BlockNumber       string
-	TimeStamp         string
+	TimeStamp         int64
 	Hash              string
 	Nonce             string
 	BlockHash         string
