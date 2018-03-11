@@ -41,7 +41,7 @@ func (this *MainController) Get() {
 	//}
 	//fmt.Println("num:", num)
 
-	this.TplName = "index.tpl"
+	this.TplName = "test.tpl"
 
 }
 func (this *MainController) GetTransactionResult() {
