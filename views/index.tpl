@@ -25,12 +25,12 @@
     </ul>
   </div>
   
-  <div class="layui-side layui-bg-black">
+  <div class="layui-side layui-bg-gray">
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-      <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-        <li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
-        <li class="layui-nav-item"><a href="/getnotifcationmessage">消息通知</a></li>
+      <ul id="tree">
+       <!-- <li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
+        <li class="layui-nav-item"><a href="/getnotifcationmessage">消息通知</a></li>-->
       </ul>
     </div>
   </div>
@@ -108,13 +108,72 @@
 <!--<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>-->
 <script>
 	//JavaScript代码区域
-	layui.use(['element','layer','jquery','table'], function(){
+	layui.use(['element','layer','jquery','table','tree'], function(){
 	  var element = layui.element
 		,form=layui.form
 		,layer=layui.layer
 		,$=layui.jquery
 		,table=layui.table;
 	  //layer.msg("你好");
+	//tree 列表
+	layui.tree({
+	  elem: '#tree' //传入元素选择器'
+	  ,nodes: [{ //节点
+	    name: '项目管理'
+	    ,children: [{
+	      name: '实时数据'
+	    },{
+	      name: '钱包数据'
+		  ,children: [{
+	        name: '钱包监控'
+	      },{
+	        name: '饼图'
+	      },{
+	        name: '钱包增长'
+	      }]
+	    },{
+	      name: '基石投资者管理'
+		  ,href:'/getstockholder'
+		  ,children: [{
+	        name: '新增投资者'
+	      },{
+	        name: '批量导入'
+	      }]
+	    },{
+	      name: '项目预警'
+		  ,href: '/getearlywarn'
+	    },{
+	      name: '数据分析'
+		  ,children: [{
+	        name: '流转图谱'
+	      },{
+	        name: '关联图谱'
+	      },{
+	        name: '持仓分布'
+	      },{
+	        name: '交易分析'
+	      },{
+	        name: '资产分析'
+			,children: [{
+	        name: '详情'
+	      	}]
+	      }]
+	    }]		
+	  },{
+	    name: 'USTD汇率'
+	    ,children: [{
+	      name: '短信监控通知'	      
+	    }]
+	  },{
+	    name: '系统设置'
+	    ,children: [{
+	      name: '账号续约'	      
+	    }]
+	  },{
+	    name: '消息通知'
+		,href:'/getnotifcationmessage'
+	  }]
+	});
 	//自动加载
 	$(function(){
 		if({{.campus}}!=""){

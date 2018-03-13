@@ -33,7 +33,7 @@ type StockholderController struct {
 func (this *StockholderController) Get() {
 
 	this.TplName = "early_warn.tpl"
-
+	//	this.TplName = "index.tpl"
 }
 
 func (this *StockholderController) GetEarlyWarn() {
@@ -67,6 +67,28 @@ func (this *StockholderController) GetEarlyWarn() {
 
 func (this *StockholderController) GetNotifcationMessage() {
 	this.TplName = "notifcation_message.tpl"
+}
+
+func (this *StockholderController) GetStockHolder() {
+	this.TplName = "investor_manage.tpl"
+}
+
+//获取成员list
+func (this *StockholderController) GetStockHolderData() {
+	fmt.Println("获取stockholder消息信息")
+	o := orm.NewOrm()
+	var maps []orm.Params
+	st := new(models.Stockholder)
+	query := o.QueryTable(st)
+	//查询数据库
+	num, err := query.Values(&maps)
+	if err != nil {
+		//log4go.Stdout("获取消息失败", err.Error())
+		this.ajaxMsg("获取消息失败", MSG_ERR_Resources)
+	}
+	fmt.Println("get stockholder reslut num:", num)
+	this.ajaxList("获取消息成功", 0, num, maps)
+	return
 }
 
 //获取消息list
@@ -148,6 +170,8 @@ func (this *StockholderController) ajaxMsg(msg interface{}, msgno int) {
 func (this *StockholderController) StartTimeTask(n float64, p float64) {
 	//定期上架
 	fmt.Println("定时执行")
+	//获取apikey
+	apikey := beego.AppConfig.String("apikey")
 	//ordertime
 
 	//查询设置的数值
@@ -158,9 +182,9 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 
 	//	}
 
-	//每隔10分钟执行一次
-	tk1 := toolbox.NewTask("tk1", " 0 */10 * * * *", func() error {
-		fmt.Println("10分钟执行一次")
+	//每隔20分钟执行一次
+	tk1 := toolbox.NewTask("tk1", " 0 */20 * * * *", func() error {
+		fmt.Println("20分钟执行一次")
 		//		nt := time.Now().Format("2016-01-02 15:04:05")
 		//		s, err := time.ParseInLocation("2006-01-02 15:04:05", nt, time.Local)
 		//		if err != nil {
@@ -179,7 +203,7 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 		for _, m := range maps {
 			//遍历列表中每一项
 			var balance models.Balance
-			url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=", m["ADDRESS"])
+			url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=%s", m["ADDRESS"], apikey)
 			//fmt.Println("url:", url)
 			r, err := http.Get(url)
 			if err != nil {
@@ -230,7 +254,7 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 					//根据地址获取网站交易信息
 					//var transaction models.Transaction
 					//var result_info models.Results
-					tx_url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&page=1&offset=&sort=asc&apikey=", m["ADDRESS"])
+					tx_url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=0&endblock=99999999&page=1&offset=&sort=asc&apikey=%s", m["ADDRESS"], apikey)
 					fmt.Println("tx_url:", tx_url)
 					r, err := http.Get(tx_url)
 					if err != nil {
@@ -281,6 +305,8 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 					fmt.Println("insert num:", num)
 				}
 			}
+			//sleep
+			time.Sleep(0.5 * time.Second)
 		}
 		return nil
 	})
