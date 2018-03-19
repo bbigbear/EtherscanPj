@@ -12,7 +12,7 @@ import (
 
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/httplib"
+	//"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
 	"github.com/tidwall/gjson"
@@ -44,24 +44,29 @@ func (this *StockholderController) AddMonitor() {
 
 func (this *StockholderController) AddMonitorAction() {
 	var m models.Monitior
-	var result models.ResultMoitor
+	//	var result models.ResultMoitor
 	list := make(map[string]interface{})
 	json.Unmarshal(this.Ctx.Input.RequestBody, &m)
 	//获取parms
-	req := httplib.Post("http://testapi.friendfun.org:8088/api/addmonitoring")
-	req.Param("userid", m.Userid)
-	req.Param("contract", m.Contract)
-	req.Param("address", m.Address)
-	req.Param("time", m.Time)
-	req.Param("value", m.Value)
+	//	req := httplib.Post("http://testapi.friendfun.org:8088/api/addmonitoring")
+	//	req.Param("userid", m.Userid)
+	//	req.Param("contract", m.Contract)
+	//	req.Param("address", m.Address)
+	//	req.Param("time", m.Time)
+	//	req.Param("value", m.Value)
 
-	err := req.ToJSON(&result)
+	//	err := req.ToJSON(&result)
+	//	if err != nil {
+	//		fmt.Println("add monitor err", err.Error())
+	//		this.ajaxMsg("新增失败", MSG_ERR_Resources)
+	//	}
+	o := orm.NewOrm()
+	num, err := o.Insert(&m)
 	if err != nil {
-		fmt.Println("add monitor err", err.Error())
-		this.ajaxMsg("新增失败", MSG_ERR_Resources)
+		fmt.Println("insert monitor err")
 	}
-	list["id"] = result.Id
-	this.ajaxList("新增成功", MSG_OK, 1, list)
+	list["id"] = num
+	this.ajaxList("新增成功", MSG_OK, num, list)
 	return
 
 }
@@ -124,16 +129,64 @@ func (this *StockholderController) GetStockHolderData() {
 //获取成员list
 func (this *StockholderController) GetMonitorData() {
 	fmt.Println("获取MonitorData消息信息")
-	var m map[string]interface{}
-	req := httplib.Get("http://testapi.friendfun.org:8088/api/getmonitorings")
-	str, err := req.Bytes()
-	if err != nil {
-		fmt.Println("get monitor data err", err.Error())
-	}
-	fmt.Println(string(str))
+	//	var m map[string]interface{}
+	//	req := httplib.Get("http://testapi.friendfun.org:8088/api/getmonitorings")
+	//	str, err := req.Bytes()
+	//	if err != nil {
+	//		fmt.Println("get monitor data err", err.Error())
+	//	}
+	//	fmt.Println(string(str))
 	//	result := gjson.GetBytes(str, "monitorings")
-	json.Unmarshal(str, &m)
-	this.ajaxList("获取消息成功", 0, 1, m["monitorings"])
+	//	json.Unmarshal(str, &m)
+
+	//	this.ajaxList("获取消息成功", 0, 1, m["monitorings"])
+	o := orm.NewOrm()
+	var maps []orm.Params
+	m := new(models.Monitior)
+	query := o.QueryTable(m)
+	//查询数据库
+	num, err := query.Values(&maps)
+	if err != nil {
+		//log4go.Stdout("获取投资者失败", err.Error())
+		this.ajaxMsg("获取投资者失败", MSG_ERR_Resources)
+	}
+	fmt.Println("get monitor_list reslut num:", num)
+	this.ajaxList("获取投资者成功", 0, num, maps)
+	return
+}
+
+//删除
+func (this *StockholderController) DelMonitorData() {
+	fmt.Println("删除消息数据")
+	o := orm.NewOrm()
+	m := new(models.Monitior)
+	//list := make(map[string]interface{})
+	id := this.Input().Get("id")
+	fmt.Println("del id:", id)
+	idList := strings.Split(id, ",")
+	fmt.Println("idList:", idList)
+	id_len := len(idList) - 1
+	var idIntList []int64
+	for i := 0; i < id_len; i++ {
+		idd, err := strconv.ParseInt(idList[i], 10, 64)
+		if err != nil {
+			//log4go.Stdout("delmulti string转int 失败", err.Error())
+			fmt.Println("delmulti string转int 失败", err.Error())
+		}
+		idIntList = append(idIntList, idd)
+	}
+	fmt.Println("idIntList:", idIntList)
+	num, err := o.QueryTable(m).Filter("Id__in", idIntList).Delete()
+	if err != nil {
+		//log4go.Stdout("删除消息失败", err.Error())
+		this.ajaxMsg("删除消息失败", MSG_ERR_Resources)
+	}
+	fmt.Println("del multimonitor reslut num:", num)
+	if num == 0 {
+		this.ajaxMsg("删除消息失败", MSG_ERR_Param)
+	}
+	//list["data"] = maps
+	this.ajaxMsg("删除消息成功", MSG_OK)
 	return
 }
 

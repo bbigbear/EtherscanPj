@@ -11,6 +11,7 @@ func init() {
 	beego.Router("/addmonitor", &controllers.StockholderController{}, "*:AddMonitor")
 	beego.Router("/addmonitor_action", &controllers.StockholderController{}, "post:AddMonitorAction")
 	beego.Router("/getmonitordata", &controllers.StockholderController{}, "*:GetMonitorData")
+	beego.Router("/delmonitordata", &controllers.StockholderController{}, "post:DelMonitorData")
 	beego.Router("/getearlywarn", &controllers.StockholderController{}, "*:GetEarlyWarn")
 	beego.Router("/getnotifcationmessage", &controllers.StockholderController{}, "*:GetNotifcationMessage")
 	beego.Router("/getnotifcationdata", &controllers.StockholderController{}, "*:GetNotifcationData")

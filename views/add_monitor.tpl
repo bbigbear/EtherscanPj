@@ -42,7 +42,15 @@
 		    <div class="layui-inline">
 		      <label class="layui-form-label">投资者姓名</label>
 		      <div class="layui-input-inline" >
-		        <input type="text" name="Sell_price" id="userid" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+		        <input type="text" name="Sell_price" id="name" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">手机</label>
+		      <div class="layui-input-inline" >
+		        <input type="text" name="Sell_price" id="phone" placeholder="请输入手机" autocomplete="off" class="layui-input">
 		      </div>
 		    </div>
 		  </div>
@@ -50,34 +58,26 @@
 		    <div class="layui-inline">
 		      <label class="layui-form-label">合约地址</label>
 		      <div class="layui-input-inline">
-			  <input type="text" name="Name" id="contract" placeholder="请输入合约地址" autocomplete="off" class="layui-input">
-		    </div>
+			  <input type="text" name="Name" id="contract" placeholder="请输入合约地址" autocomplete="off" class="layui-input" style="width:300px;">
+		      </div>
 		    </div>
 		  </div>
 		  <div class="layui-form-item">
 		    <div class="layui-inline">
 		      <label class="layui-form-label">帐号地址</label>
 		      <div class="layui-input-inline" >
-		        <input type="text" name="Sell_price" id="address" placeholder="请输入帐号地址" autocomplete="off" class="layui-input">
+		        <input type="text" name="Sell_price" id="address" placeholder="请输入帐号地址" autocomplete="off" class="layui-input" style="width:300px;">
 		      </div>
 		    </div>
-		  </div>
-		  <div class="layui-form-item">
-		    <div class="layui-inline">
-		      <label class="layui-form-label">时间范围</label>
-		      <div class="layui-input-inline" >
-		        <input type="text" name="Sell_price" id="time" placeholder="请输入时间范围" autocomplete="off" class="layui-input">
-		      </div>
-		    </div>
-		  </div>
-		 <div class="layui-form-item">
+
+		 <!--<div class="layui-form-item">
 		    <div class="layui-inline">
 		      <label class="layui-form-label">金额阈值</label>
 		      <div class="layui-input-inline" >
 		        <input type="text" name="Sell_price" id="value" placeholder="请输入金额" autocomplete="off" class="layui-input">
 		      </div>
 		    </div>
-		  </div>
+		  </div>-->
 		  <div class="layui-form-item">
 		    <div class="layui-input-block">
 		      <button class="layui-btn" id="add">确认提交</button>
@@ -178,11 +178,10 @@
 //添加
 	$('#add').on('click',function(){
 	    var data={
-			'userid':$("#userid").val(),
+			'name':$("#name").val(),
 			'contract':$("#contract").val(),
 			'address':$("#address").val(),
-			'time':$("#time").val(),
-			'value':$("#value").val(),
+			'phone':$("#phone").val(),
 			};
 			$.ajax({
 				type:"POST",

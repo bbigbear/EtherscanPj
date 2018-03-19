@@ -2,11 +2,10 @@ package models
 
 type Monitior struct {
 	Id       int64
-	Userid   string
+	Name     string
 	Contract string
 	Address  string
-	Time     string
-	Value    string
+	Phone    string
 }
 
 type ResultMoitor struct {

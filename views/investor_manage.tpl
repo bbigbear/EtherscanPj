@@ -166,12 +166,11 @@
 			,id: 'listReload'
 		    ,cols: [[ //表头
 			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'id', title:'ID', width:120}
-			  ,{field:'userid',  title:'用户名称', width:150}
-			  ,{field:'contract',  title:'合约地址', width:150}
-		      ,{field:'address',  title:'帐号地址', width:120}
-			  ,{field:'time',  title:'时间范围', width:200}
-			  ,{field:'value',  title:'金额阈值', width:200}
+		      ,{field:'Id', title:'ID', width:80}
+			  ,{field:'Name',  title:'用户名称', width:150}
+			  ,{field:'Contract',  title:'合约地址', width:150}
+		      ,{field:'Address',  title:'帐号地址', width:120}
+			  ,{field:'Phone',  title:'手机', width:200}
 		    ]]
 		  });		
 	
@@ -190,7 +189,7 @@
 				//window.location.href="/v1/delmultidata?id="+str+"";
 				$.ajax({
 					type:"POST",
-					url:"/delnotifcationdata",
+					url:"/delmonitordata",
 					data:{
 						id:str	
 					},
