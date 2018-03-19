@@ -133,9 +133,11 @@
 	      }]
 	    },{
 	      name: '基石投资者管理'
+		  ,spread:true	
 		  ,href:'/getstockholder'
 		  ,children: [{
-	        name: '新增投资者'
+			name: '新增投资者'
+			,href:'/addmonitor'
 	      },{
 	        name: '批量导入'
 	      }]

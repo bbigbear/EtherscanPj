@@ -90,9 +90,11 @@
 	      }]
 	    },{
 	      name: '基石投资者管理'
+		  ,spread:true	
 		  ,href:'/getstockholder'
 		  ,children: [{
 	        name: '新增投资者'
+			,href:'/addmonitor'
 	      },{
 	        name: '批量导入'
 	      }]
@@ -141,7 +143,7 @@
 			
 	  //table 渲染
 	  table.render({
-	    elem: '#MessageList'
+	    elem: '#MessageList1'
 	    ,height: 315
 	    ,url: '/getstockholderdata' //数据接口
 	    ,page: true //开启分页
@@ -154,7 +156,24 @@
 	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
 		  ,{field:'ADDRESS',  title:'地址', width:200}
 	    ]]
-	  });		
+	  });
+	
+		table.render({
+		    elem: '#MessageList'
+		    ,height: 315
+		    ,url: '/getmonitordata' //数据接口
+		    ,page: true //开启分页
+			,id: 'listReload'
+		    ,cols: [[ //表头
+			  {type:'checkbox', fixed: 'left'}
+		      ,{field:'id', title:'ID', width:120}
+			  ,{field:'userid',  title:'用户名称', width:150}
+			  ,{field:'contract',  title:'合约地址', width:150}
+		      ,{field:'address',  title:'帐号地址', width:120}
+			  ,{field:'time',  title:'时间范围', width:200}
+			  ,{field:'value',  title:'金额阈值', width:200}
+		    ]]
+		  });		
 	
 	//批量删除
 	$('#del').on('click',function(){				

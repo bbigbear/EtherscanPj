@@ -12,6 +12,7 @@ import (
 
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
 	"github.com/tidwall/gjson"
@@ -36,6 +37,35 @@ func (this *StockholderController) Get() {
 	//	this.TplName = "index.tpl"
 }
 
+//新增投资者
+func (this *StockholderController) AddMonitor() {
+	this.TplName = "add_monitor.tpl"
+}
+
+func (this *StockholderController) AddMonitorAction() {
+	var m models.Monitior
+	var result models.ResultMoitor
+	list := make(map[string]interface{})
+	json.Unmarshal(this.Ctx.Input.RequestBody, &m)
+	//获取parms
+	req := httplib.Post("http://testapi.friendfun.org:8088/api/addmonitoring")
+	req.Param("userid", m.Userid)
+	req.Param("contract", m.Contract)
+	req.Param("address", m.Address)
+	req.Param("time", m.Time)
+	req.Param("value", m.Value)
+
+	err := req.ToJSON(&result)
+	if err != nil {
+		fmt.Println("add monitor err", err.Error())
+		this.ajaxMsg("新增失败", MSG_ERR_Resources)
+	}
+	list["id"] = result.Id
+	this.ajaxList("新增成功", MSG_OK, 1, list)
+	return
+
+}
+
 func (this *StockholderController) GetEarlyWarn() {
 	//获取action
 	action := this.Input().Get("action")
@@ -54,10 +84,10 @@ func (this *StockholderController) GetEarlyWarn() {
 				fmt.Println("get sp err")
 			}
 			fmt.Println("earlywarn_info:", n, p)
-			this.StopTimeTask()
-			this.StartTimeTask(n, p)
+			//this.StopTimeTask()
+			//this.StartTimeTask(n, p)
 		} else if action == "stop" {
-			this.StopTimeTask()
+			//this.StopTimeTask()
 		}
 
 	}
@@ -88,6 +118,22 @@ func (this *StockholderController) GetStockHolderData() {
 	}
 	fmt.Println("get stockholder reslut num:", num)
 	this.ajaxList("获取消息成功", 0, num, maps)
+	return
+}
+
+//获取成员list
+func (this *StockholderController) GetMonitorData() {
+	fmt.Println("获取MonitorData消息信息")
+	var m map[string]interface{}
+	req := httplib.Get("http://testapi.friendfun.org:8088/api/getmonitorings")
+	str, err := req.Bytes()
+	if err != nil {
+		fmt.Println("get monitor data err", err.Error())
+	}
+	fmt.Println(string(str))
+	//	result := gjson.GetBytes(str, "monitorings")
+	json.Unmarshal(str, &m)
+	this.ajaxList("获取消息成功", 0, 1, m["monitorings"])
 	return
 }
 
@@ -306,7 +352,7 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 				}
 			}
 			//sleep
-			time.Sleep(0.5 * time.Second)
+			//			time.Sleep(0.5 * time.Second)
 		}
 		return nil
 	})
