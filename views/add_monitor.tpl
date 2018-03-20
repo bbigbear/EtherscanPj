@@ -120,6 +120,7 @@
 		,spread:true
 	    ,children: [{
 	      name: '实时数据'
+		,href:'/realtimedata'
 	    },{
 	      name: '钱包数据'
 		  ,children: [{

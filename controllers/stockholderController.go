@@ -20,17 +20,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const (
-	MSG_OK            = 200
-	MSG_ERR_Param     = 400
-	MSG_ERR_Verified  = 401
-	MSG_ERR_Authority = 403
-	MSG_ERR_Resources = 404
-	MSG_ERR           = 500
-)
-
 type StockholderController struct {
-	beego.Controller
+	BaseController
 }
 
 func (this *StockholderController) Get() {
@@ -244,28 +235,6 @@ func (this *StockholderController) DelNotifcationData() {
 	//list["data"] = maps
 	this.ajaxMsg("删除消息成功", MSG_OK)
 	return
-}
-
-//ajax返回 列表
-func (this *StockholderController) ajaxList(msg interface{}, msgno int, count int64, data interface{}) {
-	out := make(map[string]interface{})
-	out["code"] = msgno
-	out["message"] = msg
-	out["count"] = count
-	out["data"] = data
-	this.Data["json"] = out
-	this.ServeJSON()
-	this.StopRun()
-}
-
-//ajax返回
-func (this *StockholderController) ajaxMsg(msg interface{}, msgno int) {
-	out := make(map[string]interface{})
-	out["code"] = msgno
-	out["message"] = msg
-	this.Data["json"] = out
-	this.ServeJSON()
-	this.StopRun()
 }
 
 //关闭通知

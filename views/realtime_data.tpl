@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>基石投资者管理</title>
+<title>实时数据</title>
 <link rel="stylesheet" href="/static/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -29,7 +29,7 @@
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul id="tree">
-       <!-- <li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
+        <!--<li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
         <li class="layui-nav-item"><a href="/getnotifcationmessage">消息通知</a></li>-->
       </ul>
     </div>
@@ -37,14 +37,32 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
-		<blockquote class="layui-elem-quote" style="margin-top:10px;">基石投资者管理</blockquote>					
-		<div>
-			<span class="layui-breadcrumb" lay-separator="|">										  					
-				<i class="layui-icon">&#xe640;</i>
-				<a id="del">删除</a>
-			</span>
-		</div>
-		<table id="MessageList" lay-filter="message"></table>				
+		<div class="layui-tab">
+		  <ul class="layui-tab-title">
+		    <li>全部</li>
+		    <li class="layui-this">1小时</li>
+		    <li>24小时</li>
+		    <li>一周</li>
+		    <li>一月</li>
+		  </ul>
+		  <div class="layui-tab-content">
+		    <div class="layui-tab-item">
+		        <table id="AllList" lay-filter="all"></table>
+		    </div>
+		    <div class="layui-tab-item layui-show">
+				<table id="HourList" lay-filter="hour"></table>
+			</div>
+		    <div class="layui-tab-item">
+				<table id="DayList" lay-filter="day"></table>
+			</div>
+		    <div class="layui-tab-item">
+				<table id="WeekList" lay-filter="week"></table>
+			</div>
+		    <div class="layui-tab-item">
+				<table id="MouthList" lay-filter="mouth"></table>
+			</div>
+		  </div>
+		</div>				
 	</div>
   </div>
   
@@ -79,7 +97,7 @@
 		,spread:true
 	    ,children: [{
 	      name: '实时数据'
-		,href:'/realtimedata'
+		  ,href:'/realtimedata'
 	    },{
 	      name: '钱包数据'
 		  ,children: [{
@@ -91,11 +109,12 @@
 	      }]
 	    },{
 	      name: '基石投资者管理'
-		  ,spread:true	
+		 ,spread:true		  
 		  ,href:'/getstockholder'
 		  ,children: [{
 	        name: '新增投资者'
-			,href:'/addmonitor'
+		    ,href:'/addmonitor'
+			
 	      },{
 	        name: '批量导入'
 	      }]
@@ -134,86 +153,56 @@
 		,href:'/getnotifcationmessage'
 	  }]
 	});
-	//自动加载
-	$(function(){
-		if({{.campus}}!=""){
-			$("#campus").val({{.campus}});			
-			form.render('select');	
-		}				
-	});
-			
-	  //table 渲染
+//添加
+	$('#add').on('click',function(){
+	    var data={
+			'name':$("#name").val(),
+			'contract':$("#contract").val(),
+			'address':$("#address").val(),
+			'phone':$("#phone").val(),
+			};
+			$.ajax({
+				type:"POST",
+				contentType:"application/json;charset=utf-8",
+				url:"/addmonitor_action",
+				data:JSON.stringify(data),
+				async:false,
+				error:function(request){
+					alert("post error")						
+				},
+				success:function(res){
+					if(res.code==200){
+						alert("新增成功")
+						window.location.reload();						
+					}else{
+						alert("新增失败")
+					}						
+				}
+			});							
+		return false;
+	}); 
+	//hour
+	//table 渲染
 	  table.render({
-	    elem: '#MessageList1'
+	    elem: '#HourList'
 	    ,height: 315
-	    ,url: '/getstockholderdata' //数据接口
+	    ,url: '/getrealtimedata' //数据接口
 	    ,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
-		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'NAME', title:'姓名', width:120}
-		  ,{field:'TEL',  title:'微信号', width:150}
-		  ,{field:'TEL',  title:'手机号', width:150}
-	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
-		  ,{field:'ADDRESS',  title:'地址', width:200}
+	      {field:'transactionHash', title:'TxHash', width:160}
+		  ,{field:'timestamp',  title:'交易日期', width:250}
+	      ,{field:'fromAddress',  title:'From', width:120}
+		  ,{field:'toAddress',  title:'To', width:150}
+		  ,{field:'value',  title:'数量', width:150}
+		  ,{field:'Hash',  title:'总量占比', width:250}
+		  ,{field:'Hash',  title:'预警状态', width:250}
 	    ]]
-	  });
+	  });	
 	
-		table.render({
-		    elem: '#MessageList'
-		    ,height: 315
-		    ,url: '/getmonitordata' //数据接口
-		    ,page: true //开启分页
-			,id: 'listReload'
-		    ,cols: [[ //表头
-			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
-			  ,{field:'Contract',  title:'合约地址', width:150}
-		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
-		    ]]
-		  });		
 	
-	//批量删除
-	$('#del').on('click',function(){				
-		var str="";
-		var checkStatus=table.checkStatus('listReload')
-		,data=checkStatus.data;
-		if(data.length==0){
-			alert("请选择要删除的数据")
-		}else{
-			for(var i=0;i<data.length;i++){
-				str+=data[i].Id+",";
-			}
-			layer.confirm('是否删除这'+data.length+'条数据?',{icon:3,title:'提示'},function(index){
-				//window.location.href="/v1/delmultidata?id="+str+"";
-				$.ajax({
-					type:"POST",
-					url:"/delmonitordata",
-					data:{
-						id:str	
-					},
-					async:false,
-					error:function(request){
-						alert("post error")						
-					},
-					success:function(res){
-						if(res.code==200){
-							alert("删除成功")	
-							//重载表格
-							table.reload('listReload', {							  
-							});												
-						}else{
-							alert("删除失败")
-						}						
-					}					
-				});				
-				layer.close(index);
-			});
-		}
-		return false;
-	});	
+			
+			
 			
   });
 

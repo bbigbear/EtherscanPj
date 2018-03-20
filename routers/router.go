@@ -8,6 +8,7 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.StockholderController{})
+	beego.Router("/login", &controllers.LoginController{})
 	beego.Router("/addmonitor", &controllers.StockholderController{}, "*:AddMonitor")
 	beego.Router("/addmonitor_action", &controllers.StockholderController{}, "post:AddMonitorAction")
 	beego.Router("/getmonitordata", &controllers.StockholderController{}, "*:GetMonitorData")
@@ -21,4 +22,8 @@ func init() {
 	beego.Router("/test", &controllers.MainController{})
 	beego.Router("/search/balance", &controllers.MainController{}, "*:GetBalanceResult")
 	beego.Router("/search/transaction", &controllers.MainController{}, "*:GetTransactionResult")
+
+	beego.Router("/realtimedata", &controllers.PmController{}, "*:RealTimeData")
+	beego.Router("/getrealtimedata", &controllers.PmController{}, "*:GetRealTimeData")
+
 }
