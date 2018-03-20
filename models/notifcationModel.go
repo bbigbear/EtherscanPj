@@ -5,7 +5,7 @@ type Notifcation struct {
 	Time    string
 	Target  string
 	Style   string
-	Num     float64
+	Num     string
 	Percent float64
 	Hash    string
 }

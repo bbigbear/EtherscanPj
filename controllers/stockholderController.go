@@ -13,8 +13,10 @@ import (
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
 	//"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego/cache"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
+	"github.com/shopspring/decimal"
 	"github.com/tidwall/gjson"
 )
 
@@ -33,8 +35,9 @@ type StockholderController struct {
 
 func (this *StockholderController) Get() {
 
+	//this.StartNotificationTask()
+	//this.TplName = "index.tpl"
 	this.TplName = "early_warn.tpl"
-	//	this.TplName = "index.tpl"
 }
 
 //新增投资者
@@ -78,21 +81,21 @@ func (this *StockholderController) GetEarlyWarn() {
 	if action != "" {
 		if action == "start" {
 			sn := this.Input().Get("sn")
-			sp := this.Input().Get("sp")
+			//sp := this.Input().Get("sp")
 			//get float
-			n, err := strconv.ParseFloat(sn, 64)
-			if err != nil {
-				fmt.Println("get sn err")
-			}
-			p, err := strconv.ParseFloat(sp, 64)
-			if err != nil {
-				fmt.Println("get sp err")
-			}
-			fmt.Println("earlywarn_info:", n, p)
-			//this.StopTimeTask()
-			//this.StartTimeTask(n, p)
+			//			n, err := strconv.ParseFloat(sn, 64)
+			//			if err != nil {
+			//				fmt.Println("get sn err")
+			//			}
+			//			p, err := strconv.ParseFloat(sp, 64)
+			//			if err != nil {
+			//				fmt.Println("get sp err")
+			//			}
+			fmt.Println("earlywarn_info:", sn)
+			this.StopNotificationTask()
+			this.StartNotificationTask(sn)
 		} else if action == "stop" {
-			//this.StopTimeTask()
+			this.StopNotificationTask()
 		}
 
 	}
@@ -265,6 +268,92 @@ func (this *StockholderController) ajaxMsg(msg interface{}, msgno int) {
 	this.StopRun()
 }
 
+//关闭通知
+func (this *StockholderController) StopNotificationTask() {
+	fmt.Println("关闭通知")
+	toolbox.DeleteTask("tk1")
+}
+
+//开启通知
+func (this *StockholderController) StartNotificationTask(s string) {
+	fmt.Println("开启通知")
+	//不过期
+	bm, _ := cache.NewCache("memory", `{"interval":0}`)
+	//15s 刷新一次
+	tk1 := toolbox.NewTask("tk1", "0/15 * * * * *", func() error {
+		o := orm.NewOrm()
+		o.Using("db")
+		var maps []orm.Params
+		num, err := o.Raw("select * from Token order by id desc limit 1").Values(&maps)
+		//err := o.Raw("select * from Token order by id desc limit 1", 1).QueryRow(&token)
+		if err != nil {
+			fmt.Println("err!")
+		}
+		if bm.IsExist("id") {
+			if bm.Get("id") == maps[0]["id"].(string) {
+				fmt.Println("相等,不更新")
+				return nil
+			} else {
+				fmt.Println("不等,更新")
+				bm.Delete("id")
+			}
+		} else {
+			bm.Put("id", maps[0]["id"].(string), 0)
+		}
+		constact_address := maps[0]["contractAddress"].(string)
+		to_address := maps[0]["toAddress"].(string)
+		from_address := maps[0]["fromAddress"].(string)
+
+		value, err := decimal.NewFromString(maps[0]["value"].(string))
+		if err != nil {
+			fmt.Println("err!")
+		}
+		value1, err := decimal.NewFromString(s)
+		if err != nil {
+			fmt.Println("err!")
+		}
+		fmt.Println("num:", num, maps, value.LessThan(value1))
+		//获取list1 的数据
+		o1 := orm.NewOrm()
+		monitor := new(models.Monitior)
+		var maps_monitor []orm.Params
+		num1, err := o1.QueryTable(monitor).Values(&maps_monitor)
+		if err != nil {
+			fmt.Println("获取list失败")
+		}
+		fmt.Println("get list num", num1, maps_monitor)
+		for _, m := range maps_monitor {
+			address := m["Address"].(string)
+			fmt.Println("address", address)
+			if m["Contract"].(string) == constact_address {
+				fmt.Println("contracct", m["Contract"].(string), constact_address)
+				if address == to_address || address == from_address {
+					if value.LessThan(value1) {
+						fmt.Println("不进行推送")
+					} else {
+						fmt.Println("进行推送")
+						var notify models.Notifcation
+						notify.Hash = maps[0]["transactionHash"].(string)
+						notify.Num = maps[0]["value"].(string)
+						notify.Style = "单笔交易"
+						notify.Time = maps[0]["timestamp"].(string)
+						notify.Target = address
+						num, err := o1.Insert(&notify)
+						if err != nil {
+							fmt.Println("isnert err!")
+						}
+						fmt.Println("insert id", num)
+
+					}
+				}
+			}
+		}
+		return nil
+	})
+	toolbox.AddTask("tk1", tk1)
+	toolbox.StartTask()
+}
+
 //定时
 func (this *StockholderController) StartTimeTask(n float64, p float64) {
 	//定期上架
@@ -392,7 +481,7 @@ func (this *StockholderController) StartTimeTask(n float64, p float64) {
 					var nm models.Notifcation
 					nm.Target = m["ADDRESS"].(string)
 					nm.Style = "单笔交易"
-					nm.Num = value
+					//nm.Num = value
 					nm.Percent = value_percent
 					nm.Time = dataTimeStr
 					nm.Hash = hash

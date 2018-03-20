@@ -45,13 +45,13 @@
 		  <blockquote class="layui-elem-quote">单笔交易</blockquote>
 		  <div class="layui-form-item">
 				<div class="layui-form-mid">单笔交易超过</div>
-			    <div class="layui-input-inline" style="width: 50px;">
+			    <div class="layui-input-inline" style="width: 200px;">
 					 <input type="text" name="single_num" id="single_num" value="{{.Price}}" autocomplete="off" class="layui-input">
 				</div>
-				<div class="layui-form-mid">or</div>
+				<!--<div class="layui-form-mid">or</div>
 				<div class="layui-input-inline" style="width: 50px;">
 					 <input type="text" name="single_percent" id="single_percent" value="{{.Price}}" placeholder="%" autocomplete="off" class="layui-input">
-				</div>
+				</div>-->
 		  </div>
 		  <!--<blockquote class="layui-elem-quote">累计交易</blockquote>
 		  <div class="layui-form-item">
@@ -185,15 +185,14 @@
 		if($("input[type='checkbox']").is(':checked')){
 			//layer.msg("选中")
 			var single_num=$("#single_num").val()
-			var single_percent=$("#single_percent").val()
+			//var single_percent=$("#single_percent").val()
 			var status="start"
-			if(single_num!=""||single_percent!=""){
+			if(single_num!=""){
 				alert("保存成功")	
-				window.location.href="/getearlywarn?action="+status+"&sn="+single_num+"&sp="+single_percent;
+				window.location.href="/getearlywarn?action="+status+"&sn="+single_num;
 			}else{
 				layer.msg("请输入数字或者百分数")
-			}
-		
+			}		
 		}else{
 			var status="stop"
 			//layer.msg("未选中")
