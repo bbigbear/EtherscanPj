@@ -81,13 +81,17 @@
 	      name: '实时数据'
 		,href:'/realtimedata'
 	    },{
-	      name: '钱包数据'
+	       name: '钱包数据'
+		 ,href:'/wallet'
+		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
 	      },{
 	        name: '饼图'
+			,href:'/walletpie'
 	      },{
 	        name: '钱包增长'
+			,href:'/walletincrease'			
 	      }]
 	    },{
 	      name: '基石投资者管理'

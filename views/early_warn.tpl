@@ -125,13 +125,17 @@
 	      name: '实时数据'
 		,href:'/realtimedata'
 	    },{
-	      name: '钱包数据'
+	       name: '钱包数据'
+		 ,href:'/wallet'
+		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
 	      },{
 	        name: '饼图'
+			,href:'/walletpie'
 	      },{
 	        name: '钱包增长'
+			,href:'/walletincrease'			
 	      }]
 	    },{
 	      name: '基石投资者管理'
@@ -182,25 +186,41 @@
 	//保存按钮
 	$("#save").on('click',function(){
 		//layer.msg("点击保存")
-		
-		if($("input[type='checkbox']").is(':checked')){
-			//layer.msg("选中")
-			var single_num=$("#single_num").val()
-			//var single_percent=$("#single_percent").val()
-			var status="start"
-			if(single_num!=""){
-				alert("保存成功")	
-				window.location.href="/getearlywarn?action="+status+"&sn="+single_num;
+		if($("#single_num").val()!=""){
+			var status
+			if($("input[type='checkbox']").is(':checked')){
+				status="on"
 			}else{
-				layer.msg("请输入数字或者百分数")
-			}		
+				status="off"
+			}
+			var data={
+			'svalue':$("#single_num").val(),
+			'status':status,
+			};	
+			$.ajax({
+				type:"POST",
+				contentType:"application/json;charset=utf-8",
+				url:"/earlywarnaction",
+				data:JSON.stringify(data),
+				async:false,
+				error:function(request){
+					alert("post error")						
+				},
+				success:function(res){
+					if(res.code==200){
+						alert("保存成功")
+						//window.location.reload();						
+					}else{
+						alert("保存失败")
+					}						
+				}
+			});							
+			//window.location.href="/getearlywarn?action="+status+"&sn="+single_num;
 		}else{
-			var status="stop"
-			//layer.msg("未选中")
-			alert("保存成功")
-			window.location.href="/getearlywarn?action="+status;
-		}
-		
+			layer.msg("请输入数字")
+		}		
+		return false;
+					
 	});
 	//监听checkbox 
 	

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"EtherscanPj/controllers"
 	"EtherscanPj/models"
 	_ "EtherscanPj/routers"
 	"fmt"
@@ -13,12 +14,15 @@ import (
 func init() {
 	DBConnection()
 	RegisterModel()
+	//定时
+	controllers.StartNotificationTask()
 }
 
 func main() {
 	orm.Debug = true
 	orm.RunSyncdb("default", false, true)
 	beego.Run()
+
 }
 
 func DBConnection() {
@@ -30,6 +34,6 @@ func DBConnection() {
 
 func RegisterModel() {
 	fmt.Println("注册数据库模型")
-	orm.RegisterModel(new(models.Balance), new(models.Stockholder), new(models.Notifcation), new(models.Monitior))
+	orm.RegisterModel(new(models.Balance), new(models.Stockholder), new(models.Notifcation), new(models.Monitior), new(models.Data), new(models.Status))
 
 }

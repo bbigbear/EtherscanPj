@@ -1,8 +1,10 @@
 package models
 
+import "time"
+
 type Notifcation struct {
 	Id      int
-	Time    string
+	Time    time.Time
 	Target  string
 	Style   string
 	Num     string

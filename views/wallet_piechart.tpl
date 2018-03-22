@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>消息通知</title>
+<title>饼图</title>
 <link rel="stylesheet" href="/static/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -29,22 +29,15 @@
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul id="tree">
-        <!--<li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
+       <!-- <li class="layui-nav-item"><a href="/getearlywarn">项目预警</a></li>
         <li class="layui-nav-item"><a href="/getnotifcationmessage">消息通知</a></li>-->
       </ul>
     </div>
   </div>
   <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;">
-		<blockquote class="layui-elem-quote" style="margin-top:10px;">消息通知</blockquote>					
-		<div>
-			<span class="layui-breadcrumb" lay-separator="|">										  					
-				<i class="layui-icon">&#xe640;</i>
-				<a id="del">删除</a>
-			</span>
-		</div>
-		<table id="MessageList" lay-filter="message"></table>				
+    <div style="padding: 15px;">					
+		<div id='main' style='width:600px;height:400px;'></div>				
 	</div>
   </div>
   
@@ -61,6 +54,30 @@
 </style>
 
 <script src="/static/layui.js"></script>
+<script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
+	<script>
+          //基于准备好的DOM，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+          //指定图表的配置项和数据
+        var option = {
+            series : [
+		        {
+		            name: '饼图',
+		            type: 'pie',
+		            radius: '55%',
+		            data:[
+		                {value:235, name:''},
+		                {value:274, name:''},
+		                {value:310, name:''},
+		                {value:335, name:''},
+		                {value:400, name:''}
+		            ]
+		        }
+		    ]
+        };
+        //使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+    </script>
 <!--<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>-->
 <script>
 	//JavaScript代码区域
@@ -71,18 +88,12 @@
 		,$=layui.jquery
 		,table=layui.table;
 	  //layer.msg("你好");
-	//自动加载
-	$(function(){
-		if({{.campus}}!=""){
-			$("#campus").val({{.campus}});			
-			form.render('select');	
-		}				
-	});
 	//tree 列表
 	layui.tree({
 	  elem: '#tree' //传入元素选择器'
 	  ,nodes: [{ //节点
 	    name: '项目管理'
+		,spread:true
 	    ,children: [{
 	      name: '实时数据'
 		,href:'/realtimedata'
@@ -101,7 +112,7 @@
 	      }]
 	    },{
 	      name: '基石投资者管理'
-		  ,spread:true
+		  ,spread:true	
 		  ,href:'/getstockholder'
 		  ,children: [{
 	        name: '新增投资者'
@@ -144,24 +155,46 @@
 		,href:'/getnotifcationmessage'
 	  }]
 	});
-	
+	//自动加载
+	$(function(){
+		if({{.campus}}!=""){
+			$("#campus").val({{.campus}});			
+			form.render('select');	
+		}				
+	});
+			
 	  //table 渲染
 	  table.render({
-	    elem: '#MessageList'
+	    elem: '#MessageList1'
 	    ,height: 315
-	    ,url: '/getnotifcationdata' //数据接口
+	    ,url: '/getstockholderdata' //数据接口
 	    ,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
 		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'Time', title:'预警时间', width:160}
-		  ,{field:'Target',  title:'预警对象', width:250}
-	      ,{field:'Style',  title:'预警类型', width:120}
-		  ,{field:'Num',  title:'变动数量', width:150}
-		  ,{field:'Percent',  title:'占比', width:150}
-		  ,{field:'Hash',  title:'哈希值', width:250}
+	      ,{field:'NAME', title:'姓名', width:120}
+		  ,{field:'TEL',  title:'微信号', width:150}
+		  ,{field:'TEL',  title:'手机号', width:150}
+	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
+		  ,{field:'ADDRESS',  title:'地址', width:200}
 	    ]]
-	  });		
+	  });
+	
+		table.render({
+		    elem: '#MessageList'
+		    ,height: 315
+		    ,url: '/getmonitordata' //数据接口
+		    ,page: true //开启分页
+			,id: 'listReload'
+		    ,cols: [[ //表头
+			  {type:'checkbox', fixed: 'left'}
+		      ,{field:'Id', title:'ID', width:80}
+			  ,{field:'Name',  title:'用户名称', width:150}
+			  ,{field:'Contract',  title:'合约地址', width:150}
+		      ,{field:'Address',  title:'帐号地址', width:120}
+			  ,{field:'Phone',  title:'手机', width:200}
+		    ]]
+		  });		
 	
 	//批量删除
 	$('#del').on('click',function(){				
@@ -178,7 +211,7 @@
 				//window.location.href="/v1/delmultidata?id="+str+"";
 				$.ajax({
 					type:"POST",
-					url:"/delnotifcationdata",
+					url:"/delmonitordata",
 					data:{
 						id:str	
 					},
@@ -204,8 +237,6 @@
 	});	
 			
   });
-
-	
 	
 </script>
 

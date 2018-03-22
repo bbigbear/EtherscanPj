@@ -48,18 +48,23 @@
 		  <div class="layui-tab-content">
 		    <div class="layui-tab-item">
 		        <table id="AllList" lay-filter="all"></table>
+<!--				<label class="layui-form-label">共{{.all_num}}笔</label>-->
 		    </div>
 		    <div class="layui-tab-item layui-show">
 				<table id="HourList" lay-filter="hour"></table>
+<!--				<label class="layui-form-label">共{{.hour_num}}笔</label>-->
 			</div>
 		    <div class="layui-tab-item">
 				<table id="DayList" lay-filter="day"></table>
+<!--				<label class="layui-form-label">共{{.day_num}}笔</label>-->
 			</div>
 		    <div class="layui-tab-item">
 				<table id="WeekList" lay-filter="week"></table>
+<!--				<label class="layui-form-label">共{{.week_num}}笔</label>-->
 			</div>
 		    <div class="layui-tab-item">
-				<table id="MouthList" lay-filter="mouth"></table>
+				<table id="MonthList" lay-filter="mouth"></table>
+<!--				<label class="layui-form-label">共{{.month_num}}笔</label>-->
 			</div>
 		  </div>
 		</div>				
@@ -99,13 +104,17 @@
 	      name: '实时数据'
 		  ,href:'/realtimedata'
 	    },{
-	      name: '钱包数据'
+	       name: '钱包数据'
+		 ,href:'/wallet'
+		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
 	      },{
 	        name: '饼图'
+			,href:'/walletpie'
 	      },{
 	        name: '钱包增长'
+			,href:'/walletincrease'			
 	      }]
 	    },{
 	      name: '基石投资者管理'
@@ -184,25 +193,88 @@
 	//hour
 	//table 渲染
 	  table.render({
-	    elem: '#HourList'
+	    elem: '#AllList'
 	    ,height: 315
-	    ,url: '/getrealtimedata' //数据接口
+	    ,url: '/getrealtimedata?type=all' //数据接口
 	    ,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
-	      {field:'transactionHash', title:'TxHash', width:160}
-		  ,{field:'timestamp',  title:'交易日期', width:250}
-	      ,{field:'fromAddress',  title:'From', width:120}
-		  ,{field:'toAddress',  title:'To', width:150}
-		  ,{field:'value',  title:'数量', width:150}
-		  ,{field:'Hash',  title:'总量占比', width:250}
-		  ,{field:'Hash',  title:'预警状态', width:250}
+	      {field:'transaction_hash', title:'TxHash', width:200}
+		  ,{field:'timestamp',  title:'交易日期', width:180}
+	      ,{field:'from_address',  title:'From', width:200}
+		  ,{field:'to_address',  title:'To', width:200}
+		  ,{field:'value',  title:'数量', width:200}
+		  ,{field:'percent',  title:'总量占比', width:100}
+		  ,{field:'status',  title:'预警状态', width:100}
+	    ]]
+	  });
+	
+	  table.render({
+	    elem: '#HourList'
+	    ,height: 315
+	    ,url: '/getrealtimedata?type=hour' //数据接口
+	    ,page: true //开启分页
+		,id: 'listReload'
+	    ,cols: [[ //表头
+	      {field:'transaction_hash', title:'TxHash', width:200}
+		  ,{field:'timestamp',  title:'交易日期', width:180}
+	      ,{field:'from_address',  title:'From', width:200}
+		  ,{field:'to_address',  title:'To', width:200}
+		  ,{field:'value',  title:'数量', width:200}
+		  ,{field:'percent',  title:'总量占比', width:100}
+		  ,{field:'status',  title:'预警状态', width:100}
+	    ]]
+	  });
+	  table.render({
+	    elem: '#DayList'
+	    ,height: 315
+	    ,url: '/getrealtimedata?type=day' //数据接口
+	    ,page: true //开启分页
+		,id: 'listReload'
+	    ,cols: [[ //表头
+	      {field:'transaction_hash', title:'TxHash', width:200}
+		  ,{field:'timestamp',  title:'交易日期', width:180}
+	      ,{field:'from_address',  title:'From', width:200}
+		  ,{field:'to_address',  title:'To', width:200}
+		  ,{field:'value',  title:'数量', width:200}
+		  ,{field:'percent',  title:'总量占比', width:100}
+		  ,{field:'status',  title:'预警状态', width:100}
+	    ]]
+	  });
+	  table.render({
+	    elem: '#WeekList'
+	    ,height: 315
+	    ,url: '/getrealtimedata?type=week' //数据接口
+	    ,page: true //开启分页
+		,id: 'listReload'
+	    ,cols: [[ //表头
+	      {field:'transaction_hash', title:'TxHash', width:200}
+		  ,{field:'timestamp',  title:'交易日期', width:180}
+	      ,{field:'from_address',  title:'From', width:200}
+		  ,{field:'to_address',  title:'To', width:200}
+		  ,{field:'value',  title:'数量', width:200}
+		  ,{field:'percent',  title:'总量占比', width:100}
+		  ,{field:'status',  title:'预警状态', width:100}
+	    ]]
+	  });
+	  table.render({
+	    elem: '#MonthList'
+	    ,height: 315
+	    ,url: '/getrealtimedata?type=month' //数据接口
+	    ,page: true //开启分页
+		,id: 'listReload'
+	    ,cols: [[ //表头
+	      {field:'transaction_hash', title:'TxHash', width:200}
+		  ,{field:'timestamp',  title:'交易日期', width:180}
+	      ,{field:'from_address',  title:'From', width:200}
+		  ,{field:'to_address',  title:'To', width:200}
+		  ,{field:'value',  title:'数量', width:200}
+		  ,{field:'percent',  title:'总量占比', width:100}
+		  ,{field:'status',  title:'预警状态', width:100}
 	    ]]
 	  });	
-	
-	
-			
-			
+		
+					
 			
   });
 

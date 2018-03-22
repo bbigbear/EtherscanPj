@@ -14,6 +14,7 @@ func init() {
 	beego.Router("/getmonitordata", &controllers.StockholderController{}, "*:GetMonitorData")
 	beego.Router("/delmonitordata", &controllers.StockholderController{}, "post:DelMonitorData")
 	beego.Router("/getearlywarn", &controllers.StockholderController{}, "*:GetEarlyWarn")
+	beego.Router("/earlywarnaction", &controllers.StockholderController{}, "post:EarlyWarnAction")
 	beego.Router("/getnotifcationmessage", &controllers.StockholderController{}, "*:GetNotifcationMessage")
 	beego.Router("/getnotifcationdata", &controllers.StockholderController{}, "*:GetNotifcationData")
 	beego.Router("/getstockholder", &controllers.StockholderController{}, "*:GetStockHolder")
@@ -25,5 +26,9 @@ func init() {
 
 	beego.Router("/realtimedata", &controllers.PmController{}, "*:RealTimeData")
 	beego.Router("/getrealtimedata", &controllers.PmController{}, "*:GetRealTimeData")
+
+	beego.Router("/wallet", &controllers.WalletController{})
+	beego.Router("/walletincrease", &controllers.WalletController{}, "*:GetIncrease")
+	beego.Router("/walletpie", &controllers.WalletController{}, "*:GetPie")
 
 }
