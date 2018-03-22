@@ -236,103 +236,148 @@ func StartNotificationTask() {
 	fmt.Println("开启通知")
 	//不过期
 	bm, _ := cache.NewCache("memory", `{"interval":0}`)
-	//15s 刷新一次
-	tk1 := toolbox.NewTask("tk1", "0/15 * * * * *", func() error {
+	//10分钟 刷新一次
+	tk1 := toolbox.NewTask("tk1", "0 */10 * * * *", func() error {
 		o := orm.NewOrm()
 		o.Using("db")
 		var maps []orm.Params
+		var maps_update []orm.Params
+		//o.Raw(selectfrom tablename)
+		//		var m []orm.Params
+		//		count, err := o.Raw("select count(*) from Token").Values(&m)
+		//		if err != nil {
+		//			fmt.Println("err!") // slene
+		//		}
+		//		fmt.Println(m[0]["count(*)"], count)
+		//		//string到int
+		//		id, err := strconv.Atoi(m[0]["count(*)"].(string))
+		//		if err != nil {
+		//			fmt.Println("err!")
+		//		}
+
 		num, err := o.Raw("select * from Token order by id desc limit 1").Values(&maps)
-		//err := o.Raw("select * from Token order by id desc limit 1", 1).QueryRow(&token)
 		if err != nil {
 			fmt.Println("err!")
 		}
+		fmt.Println(num)
+		//err := o.Raw("select * from Token order by id desc limit 1", 1).QueryRow(&token)
+		var n int
 		if bm.IsExist("id") {
 			if bm.Get("id") == maps[0]["id"].(string) {
 				fmt.Println("相等,不更新")
 				return nil
 			} else {
 				fmt.Println("不等,更新")
+				//string到int
+				id, err := strconv.Atoi(bm.Get("id").(string))
+				if err != nil {
+					fmt.Println("err!")
+				}
+
+				last_id, err := strconv.Atoi(maps[0]["id"].(string))
+				if err != nil {
+					fmt.Println("err!")
+				}
+
+				if last_id > id {
+					n = last_id - id
+				}
+				fmt.Println("n:", n)
 				bm.Delete("id")
+				//更新
+				bm.Put("id", maps[0]["id"].(string), 0)
 			}
 		} else {
 			bm.Put("id", maps[0]["id"].(string), 0)
+			n = 1
 		}
-		constact_address := maps[0]["contractAddress"].(string)
-		to_address := maps[0]["toAddress"].(string)
-		from_address := maps[0]["fromAddress"].(string)
-
-		value, err := decimal.NewFromString(maps[0]["value"].(string))
+		//获取更新数据
+		count, err := o.Raw("select * from Token order by id desc limit ?", n).Values(&maps_update)
 		if err != nil {
 			fmt.Println("err!")
 		}
-		//获取list1 的数据
-		o1 := orm.NewOrm()
-		monitor := new(models.Monitior)
-		status := new(models.Status)
-		var maps_monitor []orm.Params
+		fmt.Println(count)
+		//循环数据
+		for _, u := range maps_update {
+			//获取数据库中数据，进行过滤
+			constact_address := u["contractAddress"].(string)
+			to_address := u["toAddress"].(string)
+			from_address := u["fromAddress"].(string)
 
-		num1, err := o1.QueryTable(monitor).Values(&maps_monitor)
-		if err != nil {
-			fmt.Println("获取list失败")
-		}
-		fmt.Println("get list num", num1, maps_monitor)
-		for _, m := range maps_monitor {
-			address := m["Address"].(string)
-			fmt.Println("address", address)
-			if m["Contract"].(string) == constact_address {
-				fmt.Println("contracct", m["Contract"].(string), constact_address)
-				if address == to_address || address == from_address {
-					//判断是否开启通知状态
-					var status_data models.Status
-					o1.QueryTable(status).Filter("Id", 1).One(&status_data)
-					if err != nil {
-						fmt.Println("查找status失败")
-					}
-					//将数据存入data中
-					var token_data models.Data
-					token_data.BlockNumber = maps[0]["blockNumber"].(string)
-					token_data.ContractAddress = constact_address
-					token_data.FromAddress = from_address
-					t, _ := time.Parse("2006-01-02 15:04:05", maps[0]["timestamp"].(string))
-					token_data.Timestamp = t
-					token_data.ToAddress = to_address
-					token_data.TransactionHash = maps[0]["transactionHash"].(string)
-					token_data.Value = maps[0]["value"].(string)
-					if status_data.Status == "on" {
-						token_data.Status = "警告"
-						//获取交易value
-						value1, err := decimal.NewFromString(status_data.Svalue)
+			value, err := decimal.NewFromString(u["value"].(string))
+			if err != nil {
+				fmt.Println("err!")
+			}
+			//获取list1 的数据
+			o1 := orm.NewOrm()
+			monitor := new(models.Monitior)
+			status := new(models.Status)
+			var maps_monitor []orm.Params
+
+			num1, err := o1.QueryTable(monitor).Values(&maps_monitor)
+			if err != nil {
+				fmt.Println("获取list失败")
+			}
+			fmt.Println("get list num", num1, maps_monitor)
+			for _, m := range maps_monitor {
+				address := m["Address"].(string)
+				fmt.Println("address", address)
+				if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
+					fmt.Println("contracct", m["Contract"].(string), constact_address)
+					if address == to_address || address == from_address {
+						//判断是否开启通知状态
+						var status_data models.Status
+						o1.QueryTable(status).Filter("Id", 1).One(&status_data)
 						if err != nil {
-							fmt.Println("err!")
+							fmt.Println("查找status失败")
 						}
-						fmt.Println("num:", num, maps, value.LessThan(value1))
-						if value.LessThan(value1) {
-							fmt.Println("不进行推送")
-						} else {
-							fmt.Println("进行推送")
-							var notify models.Notifcation
-							notify.Hash = maps[0]["transactionHash"].(string)
-							notify.Num = maps[0]["value"].(string)
-							notify.Style = "单笔交易"
-							t1, _ := time.Parse("2006-01-02 15:04:05", maps[0]["timestamp"].(string))
-							notify.Time = t1
-							notify.Target = address
-							num, err := o1.Insert(&notify)
+						//将数据存入data中
+						var token_data models.Data
+						token_data.BlockNumber = u["blockNumber"].(string)
+						token_data.ContractAddress = constact_address
+						token_data.FromAddress = from_address
+						t, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
+						token_data.Timestamp = t
+						token_data.ToAddress = to_address
+						token_data.TransactionHash = u["transactionHash"].(string)
+						token_data.Value = u["value"].(string)
+						if status_data.Status == "on" {
+							token_data.Status = "警告"
+							//获取交易value
+							value1, err := decimal.NewFromString(status_data.Svalue)
 							if err != nil {
-								fmt.Println("isnert err!")
+								fmt.Println("err!")
 							}
-							fmt.Println("insert id", num)
+							fmt.Println("num:", num, maps, value.LessThan(value1))
+							if value.LessThan(value1) {
+								fmt.Println("不进行推送")
+							} else {
+								fmt.Println("进行推送")
+								var notify models.Notifcation
+								notify.Hash = u["transactionHash"].(string)
+								notify.Num = u["value"].(string)
+								notify.Style = "单笔交易"
+								t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
+								notify.Time = t1
+								notify.Target = address
+								num, err := o1.Insert(&notify)
+								if err != nil {
+									fmt.Println("isnert err!")
+								}
+								fmt.Println("insert id", num)
+							}
 						}
-					}
-					num2, err := o1.Insert(&token_data)
-					if err != nil {
-						fmt.Println("插入失败")
-					}
-					fmt.Println("插入data成功num", num2)
+						num2, err := o1.Insert(&token_data)
+						if err != nil {
+							fmt.Println("插入失败")
+						}
+						fmt.Println("插入data成功num", num2)
 
+					}
 				}
 			}
 		}
+
 		return nil
 	})
 	toolbox.AddTask("tk1", tk1)
