@@ -99,6 +99,7 @@
 	  elem: '#tree' //传入元素选择器'
 	  ,nodes: [{ //节点
 	    name: '项目管理'
+		,href:'/pm'	
 		,spread:true
 	    ,children: [{
 	      name: '实时数据'
@@ -196,7 +197,7 @@
 	    elem: '#AllList'
 	    ,height: 315
 	    ,url: '/getrealtimedata?type=all' //数据接口
-	    ,page: true //开启分页
+	    //,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
 	      {field:'transaction_hash', title:'TxHash', width:200}

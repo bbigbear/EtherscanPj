@@ -37,7 +37,7 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">					
-		 <div class="layui-row layui-col-space5">
+		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
 		    <div class="layui-col-md4" style="width:150px;">
 		      <div class="layui-bg-gray"  style="height:100px;;">钱包个数</div>
 		    </div>
@@ -79,6 +79,7 @@
 	  elem: '#tree' //传入元素选择器'
 	  ,nodes: [{ //节点
 	    name: '项目管理'
+		,href:'/pm'	
 		,spread:true
 	    ,children: [{
 	      name: '实时数据'
@@ -149,28 +150,12 @@
 		}				
 	});
 			
-	  //table 渲染
-	  table.render({
-	    elem: '#MessageList1'
-	    ,height: 315
-	    ,url: '/getstockholderdata' //数据接口
-	    ,page: true //开启分页
-		,id: 'listReload'
-	    ,cols: [[ //表头
-		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'NAME', title:'姓名', width:120}
-		  ,{field:'TEL',  title:'微信号', width:150}
-		  ,{field:'TEL',  title:'手机号', width:150}
-	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
-		  ,{field:'ADDRESS',  title:'地址', width:200}
-	    ]]
-	  });
 	
 		table.render({
 		    elem: '#MessageList'
 		    ,height: 315
 		    ,url: '/getmonitordata' //数据接口
-		    ,page: true //开启分页
+		    //,page: true //开启分页
 			,id: 'listReload'
 		    ,cols: [[ //表头
 			  {type:'checkbox', fixed: 'left'}

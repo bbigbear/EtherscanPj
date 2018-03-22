@@ -83,6 +83,7 @@
 	  elem: '#tree' //传入元素选择器'
 	  ,nodes: [{ //节点
 	    name: '项目管理'
+		,href:'/pm'	
 	    ,children: [{
 	      name: '实时数据'
 		,href:'/realtimedata'
@@ -150,7 +151,7 @@
 	    elem: '#MessageList'
 	    ,height: 315
 	    ,url: '/getnotifcationdata' //数据接口
-	    ,page: true //开启分页
+	    //,page: true //开启分页
 		,id: 'listReload'
 	    ,cols: [[ //表头
 		  {type:'checkbox', fixed: 'left'}

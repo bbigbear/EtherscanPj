@@ -14,7 +14,7 @@ type PmController struct {
 
 func (this *PmController) Get() {
 
-	this.TplName = "realtime_data.tpl"
+	this.TplName = "pm.tpl"
 }
 
 func (this *PmController) RealTimeData() {

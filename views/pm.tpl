@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>基石投资者管理</title>
+<title>项目管理</title>
 <link rel="stylesheet" href="/static/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -36,16 +36,22 @@
   </div>
   <div class="layui-body">
     <!-- 内容主体区域 -->
-    <div style="padding: 15px;">
-		<blockquote class="layui-elem-quote" style="margin-top:10px;">基石投资者管理</blockquote>					
-		<div>
-			<span class="layui-breadcrumb" lay-separator="|">										  					
-				<i class="layui-icon">&#xe640;</i>
-				<a id="del">删除</a>
-			</span>
-		</div>
-		<table id="MessageList" lay-filter="message"></table>				
-	</div>
+    <div style="padding: 15px;">					
+		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
+		    <div class="layui-col-md4" style="width:150px;">
+		      <div class="layui-bg-gray"  style="height:100px;;">钱包</div>
+		    </div>
+		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
+		      <div class="layui-bg-gray"  style="height:100px;;">基石投资者</div>
+		    </div>
+		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
+		      <div class="layui-bg-gray"  style="height:100px;;">一小时流通量</div>
+		    </div>
+		 </div>
+		<fieldset class="layui-elem-field layui-field-title site-title">
+	      <legend><a name="color-design">项目预警</a></legend>
+	    </fieldset>
+		<table id="MessageList" lay-filter="message"></table>
   </div>
   
   <div class="layui-footer">
@@ -82,8 +88,8 @@
 	      name: '实时数据'
 		,href:'/realtimedata'
 	    },{
-	       name: '钱包数据'
-		 ,href:'/wallet'
+	      name: '钱包数据'
+		  ,href:'/wallet'
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
@@ -139,74 +145,27 @@
 		,href:'/getnotifcationmessage'
 	  }]
 	});
-	//自动加载
-	$(function(){
-		if({{.campus}}!=""){
-			$("#campus").val({{.campus}});			
-			form.render('select');	
-		}				
-	});
-			
-	
-		table.render({
-		    elem: '#MessageList'
-		    ,height: 315
-		    ,url: '/getmonitordata' //数据接口
-		    //,page: true //开启分页
-			,id: 'listReload'
-		    ,cols: [[ //表头
-			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
-			  ,{field:'Contract',  title:'合约地址', width:150}
-		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
-		    ]]
-		  });		
-	
-	//批量删除
-	$('#del').on('click',function(){				
-		var str="";
-		var checkStatus=table.checkStatus('listReload')
-		,data=checkStatus.data;
-		if(data.length==0){
-			alert("请选择要删除的数据")
-		}else{
-			for(var i=0;i<data.length;i++){
-				str+=data[i].Id+",";
-			}
-			layer.confirm('是否删除这'+data.length+'条数据?',{icon:3,title:'提示'},function(index){
-				//window.location.href="/v1/delmultidata?id="+str+"";
-				$.ajax({
-					type:"POST",
-					url:"/delmonitordata",
-					data:{
-						id:str	
-					},
-					async:false,
-					error:function(request){
-						alert("post error")						
-					},
-					success:function(res){
-						if(res.code==200){
-							alert("删除成功")	
-							//重载表格
-							table.reload('listReload', {							  
-							});												
-						}else{
-							alert("删除失败")
-						}						
-					}					
-				});				
-				layer.close(index);
-			});
-		}
-		return false;
-	});	
-			
-  });
 
-	
+			
+	  //table 渲染
+	  table.render({
+	    elem: '#MessageList'
+	    ,height: 315
+	    ,url: '/getnotifcationdata' //数据接口
+	    //,page: true //开启分页
+		,id: 'listReload'
+	    ,cols: [[ //表头
+		  {type:'checkbox', fixed: 'left'}
+	      ,{field:'Time', title:'预警时间', width:160}
+		  ,{field:'Target',  title:'预警对象', width:250}
+	      ,{field:'Style',  title:'预警类型', width:120}
+		  ,{field:'Num',  title:'变动数量', width:150}
+		  ,{field:'Percent',  title:'占比', width:150}
+		  ,{field:'Hash',  title:'哈希值', width:250}
+	    ]]
+	  });
+							
+  });
 	
 </script>
 

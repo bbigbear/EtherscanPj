@@ -24,6 +24,7 @@ func init() {
 	beego.Router("/search/balance", &controllers.MainController{}, "*:GetBalanceResult")
 	beego.Router("/search/transaction", &controllers.MainController{}, "*:GetTransactionResult")
 
+	beego.Router("/pm", &controllers.PmController{})
 	beego.Router("/realtimedata", &controllers.PmController{}, "*:RealTimeData")
 	beego.Router("/getrealtimedata", &controllers.PmController{}, "*:GetRealTimeData")
 
