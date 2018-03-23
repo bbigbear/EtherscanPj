@@ -1,7 +1,7 @@
 package main
 
 import (
-	"EtherscanPj/controllers"
+	//"EtherscanPj/controllers"
 	"EtherscanPj/models"
 	_ "EtherscanPj/routers"
 	"fmt"
@@ -15,21 +15,21 @@ func init() {
 	DBConnection()
 	RegisterModel()
 	//定时
-	controllers.StartNotificationTask()
+	//controllers.StartNotificationTask()
 }
 
 func main() {
 	orm.Debug = true
 	orm.RunSyncdb("default", false, true)
+	//controllers.StartNotificationTask()
 	beego.Run()
-
 }
 
 func DBConnection() {
 	fmt.Println("初始化数据库")
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:qwe!23@/etherscan?charset=utf8")
-	orm.RegisterDataBase("db", "mysql", "root:h0bc1NUm@tcp(47.100.38.37:3306)/blockchain?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "root:qwe!23@/etherscan?charset=utf8", 30, 30)
+	orm.RegisterDataBase("db", "mysql", "root:h0bc1NUm@tcp(47.100.38.37:3306)/blockchain?charset=utf8", 30, 30)
 }
 
 func RegisterModel() {

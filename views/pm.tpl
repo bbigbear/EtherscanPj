@@ -39,10 +39,10 @@
     <div style="padding: 15px;">					
 		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
 		    <div class="layui-col-md4" style="width:150px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">钱包</div>
+		      <div class="layui-bg-gray"  style="height:100px;;">钱包:{{.count}}</div>
 		    </div>
 		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">基石投资者</div>
+		      <div class="layui-bg-gray"  style="height:100px;;">基石投资者:{{.count}}</div>
 		    </div>
 		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
 		      <div class="layui-bg-gray"  style="height:100px;;">一小时流通量</div>

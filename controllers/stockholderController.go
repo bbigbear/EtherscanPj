@@ -236,8 +236,8 @@ func StartNotificationTask() {
 	fmt.Println("开启通知")
 	//不过期
 	bm, _ := cache.NewCache("memory", `{"interval":0}`)
-	//10分钟 刷新一次
-	tk1 := toolbox.NewTask("tk1", "0 */10 * * * *", func() error {
+	//	10分钟 刷新一次
+	tk1 := toolbox.NewTask("tk1", "0 */30 * * * *", func() error {
 		o := orm.NewOrm()
 		o.Using("db")
 		var maps []orm.Params
@@ -293,6 +293,7 @@ func StartNotificationTask() {
 		}
 		//获取更新数据
 		count, err := o.Raw("select * from Token order by id desc limit ?", n).Values(&maps_update)
+		//count, err := o.Raw("select * from Token").Values(&maps_update)
 		if err != nil {
 			fmt.Println("err!")
 		}
@@ -326,6 +327,7 @@ func StartNotificationTask() {
 					fmt.Println("contracct", m["Contract"].(string), constact_address)
 					if address == to_address || address == from_address {
 						//判断是否开启通知状态
+						fmt.Println("address:", to_address, from_address, address)
 						var status_data models.Status
 						o1.QueryTable(status).Filter("Id", 1).One(&status_data)
 						if err != nil {
@@ -348,7 +350,7 @@ func StartNotificationTask() {
 							if err != nil {
 								fmt.Println("err!")
 							}
-							fmt.Println("num:", num, maps, value.LessThan(value1))
+							//fmt.Println("num:", num1, maps, value.LessThan(value1))
 							if value.LessThan(value1) {
 								fmt.Println("不进行推送")
 							} else {

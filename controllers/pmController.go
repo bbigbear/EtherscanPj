@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"EtherscanPj/models"
 	"fmt"
 	"time"
 
@@ -14,6 +15,14 @@ type PmController struct {
 
 func (this *PmController) Get() {
 
+	//wallet
+	o := orm.NewOrm()
+	moniter := new(models.Monitior)
+	num, err := o.QueryTable(moniter).Count()
+	if err != nil {
+		fmt.Println("err!")
+	}
+	this.Data["count"] = num
 	this.TplName = "pm.tpl"
 }
 
