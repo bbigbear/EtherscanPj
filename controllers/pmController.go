@@ -15,7 +15,7 @@ type PmController struct {
 
 func (this *PmController) Get() {
 
-	//wallet
+	//pm
 	o := orm.NewOrm()
 	moniter := new(models.Monitior)
 	num, err := o.QueryTable(moniter).Count()

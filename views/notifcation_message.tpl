@@ -93,6 +93,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'	
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'
@@ -155,12 +156,12 @@
 		,id: 'listReload'
 	    ,cols: [[ //表头
 		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'Time', title:'预警时间', width:160}
-		  ,{field:'Target',  title:'预警对象', width:250}
-	      ,{field:'Style',  title:'预警类型', width:120}
-		  ,{field:'Num',  title:'变动数量', width:150}
-		  ,{field:'Percent',  title:'占比', width:150}
-		  ,{field:'Hash',  title:'哈希值', width:250}
+	      ,{field:'timestamp', title:'预警时间', width:180}
+		  ,{field:'target',  title:'预警对象', width:100}
+	      ,{field:'style',  title:'预警类型', width:120}
+		  ,{field:'num',  title:'变动数量', width:150}
+		  ,{field:'percent',  title:'占比', width:80}
+		  ,{field:'hash',  title:'哈希值', width:250}
 	    ]]
 	  });		
 	

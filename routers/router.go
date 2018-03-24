@@ -29,6 +29,8 @@ func init() {
 	beego.Router("/getrealtimedata", &controllers.PmController{}, "*:GetRealTimeData")
 
 	beego.Router("/wallet", &controllers.WalletController{})
+	beego.Router("/getwalletmonitordata", &controllers.WalletController{}, "*:GetWalletMonitorData")
+	beego.Router("/walletmonitor", &controllers.WalletController{}, "*:GetWalletMonitor")
 	beego.Router("/walletincrease", &controllers.WalletController{}, "*:GetIncrease")
 	beego.Router("/walletpie", &controllers.WalletController{}, "*:GetPie")
 

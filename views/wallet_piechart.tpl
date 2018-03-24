@@ -104,6 +104,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'	
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'

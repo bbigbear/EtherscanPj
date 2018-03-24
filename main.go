@@ -22,6 +22,7 @@ func main() {
 	orm.Debug = true
 	orm.RunSyncdb("default", false, true)
 	//controllers.StartNotificationTask()
+	//controllers.ScanData()
 	beego.Run()
 }
 

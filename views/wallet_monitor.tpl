@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>钱包增长</title>
+<title>钱包监控</title>
 <link rel="stylesheet" href="/static/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -37,8 +37,17 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">					
-		<div id='main' style='width:600px;height:400px;'></div>				
-	</div>
+		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
+		    <div class="layui-col-md4" style="width:500px;">
+		      <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">SAY</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:5px;">钱包地址:{{.wallet_address}}</div></div>
+			</div>
+		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
+			  <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:5px;padding-top:10px;">投资者:{{.name}}</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:30px;"></div></div>
+		    </div>
+		 </div>
+		<table id="MessageList" lay-filter="message"></table>
   </div>
   
   <div class="layui-footer">
@@ -54,41 +63,6 @@
 </style>
 
 <script src="/static/layui.js"></script>
-<script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script>
-	<script>
-          //基于准备好的DOM，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
-          //指定图表的配置项和数据
-        var option = {
-            title:{
-                text:'钱包增长'
-            },
-            //提示框组件
-            tooltip:{
-                //坐标轴触发，主要用于柱状图，折线图等
-                trigger:'axis'
-            },
-            //图例
-            legend:{
-                data:['个数']
-            },
-            //横轴
-            xAxis:{
-                data:["3.22","3.23","3.24","3.25","3.26","3.27"]
-            },
-            //纵轴
-            yAxis:{},
-            //系列列表。每个系列通过type决定自己的图表类型
-            series:[{
-                name:'个数',
-                //折线图
-                type:'line',
-                data:[5, 20, 36, 10, 10, 20]
-            }]
-        };
-        //使用刚指定的配置项和数据显示图表
-        myChart.setOption(option);
-    </script>
 <!--<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>-->
 <script>
 	//JavaScript代码区域
@@ -111,7 +85,7 @@
 		,href:'/realtimedata'
 	    },{
 	      name: '钱包数据'
-		 ,href:'/wallet'
+		  ,href:'/wallet'
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
@@ -176,36 +150,22 @@
 		}				
 	});
 			
-	  //table 渲染
-	  table.render({
-	    elem: '#MessageList1'
-	    ,height: 315
-	    ,url: '/getstockholderdata' //数据接口
-	    ,page: true //开启分页
-		,id: 'listReload'
-	    ,cols: [[ //表头
-		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'NAME', title:'姓名', width:120}
-		  ,{field:'TEL',  title:'微信号', width:150}
-		  ,{field:'TEL',  title:'手机号', width:150}
-	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
-		  ,{field:'ADDRESS',  title:'地址', width:200}
-	    ]]
-	  });
 	
 		table.render({
 		    elem: '#MessageList'
 		    ,height: 315
-		    ,url: '/getmonitordata' //数据接口
-		    ,page: true //开启分页
+		    ,url: '/getwalletmonitordata' //数据接口
+		    //,page: true //开启分页
 			,id: 'listReload'
 		    ,cols: [[ //表头
-			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
-			  ,{field:'Contract',  title:'合约地址', width:150}
-		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
+		      {field:'token', title:'Token', width:80}
+			  ,{field:'transaction_hash',  title:'TxHash', width:150}
+			  ,{field:'timestamp',  title:'交易日期', width:150}
+		      ,{field:'from_address',  title:'From', width:120}
+			  ,{field:'to_address',  title:'To', width:200}
+			  ,{field:'value',  title:'数量', width:200}
+			  ,{field:'percent',  title:'交易占比', width:200}
+			  ,{field:'balance',  title:'余额', width:200}
 		    ]]
 		  });		
 	

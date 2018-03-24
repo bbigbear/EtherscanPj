@@ -110,6 +110,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'	
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'
@@ -163,34 +164,6 @@
 		,href:'/getnotifcationmessage'
 	  }]
 	});
-//添加
-	$('#add').on('click',function(){
-	    var data={
-			'name':$("#name").val(),
-			'contract':$("#contract").val(),
-			'address':$("#address").val(),
-			'phone':$("#phone").val(),
-			};
-			$.ajax({
-				type:"POST",
-				contentType:"application/json;charset=utf-8",
-				url:"/addmonitor_action",
-				data:JSON.stringify(data),
-				async:false,
-				error:function(request){
-					alert("post error")						
-				},
-				success:function(res){
-					if(res.code==200){
-						alert("新增成功")
-						window.location.reload();						
-					}else{
-						alert("新增失败")
-					}						
-				}
-			});							
-		return false;
-	}); 
 	//hour
 	//table 渲染
 	  table.render({

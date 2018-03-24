@@ -39,16 +39,22 @@
     <div style="padding: 15px;">					
 		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
 		    <div class="layui-col-md4" style="width:150px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">钱包个数</div>
+		      <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">{{.count}}</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:35px;">总钱包个数</div></div>
+			</div>
+		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
+			  <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">{{.count}}</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:30px;">项目Token总量</div></div>
 		    </div>
 		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">Token总量</div>
-		    </div>
-		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">当前流通量</div>
+			  <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">?</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:30px;">当前流通量</div></div>
 		    </div>
 		 </div>
 		<table id="MessageList" lay-filter="message"></table>
+		<script type="text/html" id="barDemo">
+			<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">查看钱包监控</a>
+		</script>
   </div>
   
   <div class="layui-footer">
@@ -90,6 +96,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'			
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'
@@ -159,13 +166,25 @@
 			,id: 'listReload'
 		    ,cols: [[ //表头
 			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
+		      ,{field:'Id', title:'ID', width:50}
+			  ,{field:'Name',  title:'用户名称', width:100}
 			  ,{field:'Contract',  title:'合约地址', width:150}
 		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
+			  ,{field:'Phone',  title:'手机', width:100}
+			  ,{fixed: 'right', title:'操作',width:200, align:'center', toolbar: '#barDemo'}
 		    ]]
-		  });		
+		  });	
+		
+	//点击查看
+	//监听工具条
+		table.on('tool(message)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+		    var data = obj.data //获得当前行数据
+		    ,layEvent = obj.event; //获得 lay-event 对应的值
+		    if(layEvent === 'edit'){
+		      //layer.msg('查看操作');
+			  window.location.href="/walletmonitor?wallet_address="+data.Address;	
+	    	}
+	  });	
 	
 	//批量删除
 	$('#del').on('click',function(){				

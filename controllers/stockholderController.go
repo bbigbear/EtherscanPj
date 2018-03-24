@@ -4,6 +4,8 @@ import (
 	"EtherscanPj/models"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +16,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
 	"github.com/shopspring/decimal"
+	"github.com/tidwall/gjson"
 )
 
 type StockholderController struct {
@@ -50,6 +53,22 @@ func (this *StockholderController) AddMonitorAction() {
 	//		fmt.Println("add monitor err", err.Error())
 	//		this.ajaxMsg("新增失败", MSG_ERR_Resources)
 	//	}
+	url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=%s&address=%s&tag=latest&apikey=", m.Contract, m.Address)
+	//fmt.Println("url:", url)
+	r, err := http.Get(url)
+	if err != nil {
+		fmt.Println("http.Get err", err)
+	}
+	res, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("ioutil.ReadAll(r.Body) ", err)
+	}
+	defer r.Body.Close()
+	//fmt.Println(string(res))
+	//json.Unmarshal(res, &balance)
+	//get value
+	result := gjson.GetBytes(res, "result")
+	m.Num = result.String()
 	o := orm.NewOrm()
 	num, err := o.Insert(&m)
 	if err != nil {
@@ -177,10 +196,11 @@ func (this *StockholderController) GetNotifcationData() {
 	fmt.Println("获取消息信息")
 	o := orm.NewOrm()
 	var maps []orm.Params
-	notifcation := new(models.Notifcation)
-	query := o.QueryTable(notifcation)
+	//notifcation := new(models.Notifcation)
+	//query := o.QueryTable(notifcation)
 	//查询数据库
-	num, err := query.Values(&maps)
+	num, err := o.Raw("select * from notifcation").Values(&maps)
+	//num, err := query.Values(&maps)
 	if err != nil {
 		//log4go.Stdout("获取消息失败", err.Error())
 		this.ajaxMsg("获取消息失败", MSG_ERR_Resources)
@@ -237,7 +257,7 @@ func StartNotificationTask() {
 	//不过期
 	bm, _ := cache.NewCache("memory", `{"interval":0}`)
 	//	10分钟 刷新一次
-	tk1 := toolbox.NewTask("tk1", "0 */30 * * * *", func() error {
+	tk1 := toolbox.NewTask("tk1", "0 */10 * * * *", func() error {
 		o := orm.NewOrm()
 		o.Using("db")
 		var maps []orm.Params
@@ -319,15 +339,16 @@ func StartNotificationTask() {
 			if err != nil {
 				fmt.Println("获取list失败")
 			}
-			fmt.Println("get list num", num1, maps_monitor)
+			fmt.Println("get list ok! num", num1)
 			for _, m := range maps_monitor {
 				address := m["Address"].(string)
 				fmt.Println("address", address)
 				if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
 					fmt.Println("contracct", m["Contract"].(string), constact_address)
+					fmt.Println("address:", to_address, from_address, address)
 					if address == to_address || address == from_address {
 						//判断是否开启通知状态
-						fmt.Println("address:", to_address, from_address, address)
+						//fmt.Println("address:", to_address, from_address, address)
 						var status_data models.Status
 						o1.QueryTable(status).Filter("Id", 1).One(&status_data)
 						if err != nil {
@@ -360,8 +381,8 @@ func StartNotificationTask() {
 								notify.Num = u["value"].(string)
 								notify.Style = "单笔交易"
 								t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
-								notify.Time = t1
-								notify.Target = address
+								notify.Timestamp = t1
+								notify.Target = m["Name"].(string)
 								num, err := o1.Insert(&notify)
 								if err != nil {
 									fmt.Println("isnert err!")

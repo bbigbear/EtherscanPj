@@ -6,6 +6,7 @@ type Monitior struct {
 	Contract string
 	Address  string
 	Phone    string
+	Num      string
 }
 
 type ResultMoitor struct {

@@ -39,13 +39,16 @@
     <div style="padding: 15px;">					
 		 <div class="layui-row layui-col-space5" style="margin-bottom:50px;">
 		    <div class="layui-col-md4" style="width:150px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">钱包:{{.count}}</div>
+		      <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">{{.count}}</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:55px;">钱包</div></div>
+			</div>
+		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
+			  <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">{{.count}}</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:35px;">基石投资者</div></div>
 		    </div>
 		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">基石投资者:{{.count}}</div>
-		    </div>
-		    <div class="layui-col-md4" style="width:150px;margin-left:50px;">
-		      <div class="layui-bg-gray"  style="height:100px;;">一小时流通量</div>
+			  <div class="layui-bg-gray"  style="height:50px;"><div style="margin-left:50px;padding-top:10px;font-size:24pt;">?</div></div>
+		      <div class="layui-bg-gray"  style="height:40px;"><div style="margin-left:30px;">一小时流通量</div></div>
 		    </div>
 		 </div>
 		<fieldset class="layui-elem-field layui-field-title site-title">
@@ -93,6 +96,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'	
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'
@@ -156,12 +160,12 @@
 		,id: 'listReload'
 	    ,cols: [[ //表头
 		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'Time', title:'预警时间', width:160}
-		  ,{field:'Target',  title:'预警对象', width:250}
-	      ,{field:'Style',  title:'预警类型', width:120}
-		  ,{field:'Num',  title:'变动数量', width:150}
-		  ,{field:'Percent',  title:'占比', width:150}
-		  ,{field:'Hash',  title:'哈希值', width:250}
+	      ,{field:'timestamp', title:'预警时间', width:180}
+		  ,{field:'target',  title:'预警对象', width:100}
+	      ,{field:'style',  title:'预警类型', width:120}
+		  ,{field:'num',  title:'变动数量', width:150}
+		  ,{field:'percent',  title:'占比', width:80}
+		  ,{field:'hash',  title:'哈希值', width:250}
 	    ]]
 	  });
 							

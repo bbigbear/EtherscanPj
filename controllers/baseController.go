@@ -1,11 +1,15 @@
 package controllers
 
 import (
+	"EtherscanPj/models"
 	"fmt"
 	"log"
 	"time"
 
+	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -104,4 +108,104 @@ func (this *BaseController) GetMinuteDiffer(server_time, mqtime string) int64 {
 	} else {
 		return -1
 	}
+}
+
+//数据扫描
+func ScanData() {
+	fmt.Println("开始扫描")
+	o := orm.NewOrm()
+	o.Using("db")
+	var maps_update []orm.Params
+
+	//获取更新数据
+	//count, err := o.Raw("select * from Token order by id desc limit ?", n).Values(&maps_update)
+	count, err := o.Raw("select * from Token").Values(&maps_update)
+	if err != nil {
+		fmt.Println("err!")
+	}
+	fmt.Println(count)
+	//循环数据
+	a := 0
+	for _, u := range maps_update {
+		//获取数据库中数据，进行过滤
+		a++
+		constact_address := u["contractAddress"].(string)
+		to_address := u["toAddress"].(string)
+		from_address := u["fromAddress"].(string)
+		value, err := decimal.NewFromString(u["value"].(string))
+		if err != nil {
+			fmt.Println("err!")
+		}
+		//获取list1 的数据
+		o1 := orm.NewOrm()
+		monitor := new(models.Monitior)
+		status := new(models.Status)
+		var maps_monitor []orm.Params
+
+		num1, err := o1.QueryTable(monitor).Values(&maps_monitor)
+		if err != nil {
+			fmt.Println("获取list失败")
+		}
+		fmt.Println("get list ok! num", num1)
+		for _, m := range maps_monitor {
+			address := m["Address"].(string)
+			fmt.Println("address", address)
+			if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
+				fmt.Println("contracct", m["Contract"].(string), constact_address)
+				fmt.Println("address:", to_address, from_address, address)
+				if address == to_address || address == from_address {
+					//判断是否开启通知状态
+					//fmt.Println("address:", to_address, from_address, address)
+					var status_data models.Status
+					o1.QueryTable(status).Filter("Id", 1).One(&status_data)
+					if err != nil {
+						fmt.Println("查找status失败")
+					}
+					//将数据存入data中
+					var token_data models.Data
+					token_data.BlockNumber = u["blockNumber"].(string)
+					token_data.ContractAddress = constact_address
+					token_data.FromAddress = from_address
+					t, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
+					token_data.Timestamp = t
+					token_data.ToAddress = to_address
+					token_data.TransactionHash = u["transactionHash"].(string)
+					token_data.Value = u["value"].(string)
+					if status_data.Status == "on" {
+						token_data.Status = "警告"
+						//获取交易value
+						value1, err := decimal.NewFromString(status_data.Svalue)
+						if err != nil {
+							fmt.Println("err!")
+						}
+						//fmt.Println("num:", num1, maps, value.LessThan(value1))
+						if value.LessThan(value1) {
+							fmt.Println("不进行推送")
+						} else {
+							fmt.Println("进行推送")
+							var notify models.Notifcation
+							notify.Hash = u["transactionHash"].(string)
+							notify.Num = u["value"].(string)
+							notify.Style = "单笔交易"
+							t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
+							notify.Timestamp = t1
+							notify.Target = m["Name"].(string)
+							num, err := o1.Insert(&notify)
+							if err != nil {
+								fmt.Println("isnert err!")
+							}
+							fmt.Println("insert id", num)
+						}
+					}
+					num2, err := o1.Insert(&token_data)
+					if err != nil {
+						fmt.Println("插入失败")
+					}
+					fmt.Println("插入data成功num", num2)
+
+				}
+			}
+		}
+	}
+	fmt.Println("sum scan data complete!sum:", a)
 }

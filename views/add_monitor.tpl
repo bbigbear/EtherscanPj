@@ -38,6 +38,9 @@
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">
 		<form class="layui-form layui-form-pane1" action="" onsubmit="javascript:return false;">
+		  <fieldset class="layui-elem-field layui-field-title site-title">
+	      <legend><a name="color-design">新增投资者</a></legend>
+	      </fieldset>
 		  <div class="layui-form-item">
 		    <div class="layui-inline">
 		      <label class="layui-form-label">投资者姓名</label>
@@ -69,7 +72,49 @@
 		        <input type="text" name="Sell_price" id="address" placeholder="请输入帐号地址" autocomplete="off" class="layui-input" style="width:300px;">
 		      </div>
 		    </div>
-
+		 <!-- <fieldset class="layui-elem-field layui-field-title site-title">
+	      	<div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">钱包地址</label>
+		      <div class="layui-input-inline" >
+		        <input type="text" name="Sell_price" id="phone" placeholder="请输入手机" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">钱包标签</label>
+		      <div class="layui-input-inline">
+			  <input type="text" name="Name" id="contract" placeholder="请输入合约地址" autocomplete="off" class="layui-input" style="width:300px;">
+		      </div>
+		    </div>
+		  </div>
+		  </fieldset>
+		  <fieldset class="layui-elem-field layui-field-title site-title">
+	      <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">项目投资额</label>
+		      <div class="layui-input-inline" >
+		        <input type="text" name="Sell_price" id="phone" placeholder="请输入手机" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">锁仓比例</label>
+		      <div class="layui-input-inline">
+			  <input type="text" name="Name" id="contract" placeholder="请输入合约地址" autocomplete="off" class="layui-input" style="width:300px;">
+		      </div>
+		    </div>
+		  </div>
+		  <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">锁仓时长</label>
+		      <div class="layui-input-inline" >
+		        <input type="text" name="Sell_price" id="address" placeholder="请输入帐号地址" autocomplete="off" class="layui-input" style="width:300px;">
+		      </div>
+		    </div>
+		  </fieldset>-->
 		 <!--<div class="layui-form-item">
 		    <div class="layui-inline">
 		      <label class="layui-form-label">金额阈值</label>
@@ -128,6 +173,7 @@
 		 ,spread:true	
 		  ,children: [{
 	        name: '钱包监控'
+			,href:'/walletmonitor'	
 	      },{
 	        name: '饼图'
 			,href:'/walletpie'
@@ -210,10 +256,6 @@
 		return false;
 	}); 
 	
-	
-	
-			
-			
 			
   });
 
