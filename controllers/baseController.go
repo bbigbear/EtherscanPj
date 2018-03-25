@@ -3,13 +3,18 @@ package controllers
 import (
 	"EtherscanPj/models"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	//"strconv"
+	"strings"
 	"time"
 
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/shopspring/decimal"
+	"github.com/tidwall/gjson"
 )
 
 const (
@@ -110,6 +115,8 @@ func (this *BaseController) GetMinuteDiffer(server_time, mqtime string) int64 {
 	}
 }
 
+//去空格
+
 //数据扫描
 func ScanData() {
 	fmt.Println("开始扫描")
@@ -120,6 +127,7 @@ func ScanData() {
 	//获取更新数据
 	//count, err := o.Raw("select * from Token order by id desc limit ?", n).Values(&maps_update)
 	count, err := o.Raw("select * from Token").Values(&maps_update)
+	//count, err := o.Raw("SELECT * FROM Token WHERE fromAddress=\"0x12AA2762C59aBF54F2C40cDa450a07C7224162ef\"").Values(&maps_update)
 	if err != nil {
 		fmt.Println("err!")
 	}
@@ -133,6 +141,7 @@ func ScanData() {
 		to_address := u["toAddress"].(string)
 		from_address := u["fromAddress"].(string)
 		value, err := decimal.NewFromString(u["value"].(string))
+
 		if err != nil {
 			fmt.Println("err!")
 		}
@@ -148,11 +157,12 @@ func ScanData() {
 		}
 		fmt.Println("get list ok! num", num1)
 		for _, m := range maps_monitor {
-			address := m["Address"].(string)
+			//address := strings.Replace(m["Address"].(string), " ", "", -1)
+			address := strings.ToLower(m["Address"].(string))
 			fmt.Println("address", address)
 			if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
 				fmt.Println("contracct", m["Contract"].(string), constact_address)
-				fmt.Println("address:", to_address, from_address, address)
+				//fmt.Println("address:", to_address, from_address, address)
 				if address == to_address || address == from_address {
 					//判断是否开启通知状态
 					//fmt.Println("address:", to_address, from_address, address)
@@ -208,4 +218,41 @@ func ScanData() {
 		}
 	}
 	fmt.Println("sum scan data complete!sum:", a)
+}
+
+//更新投资者的余额
+func UpdateBalance() {
+	o := orm.NewOrm()
+	var maps []orm.Params
+	var mni models.Monitior
+	monitor := new(models.Monitior)
+	_, err := o.QueryTable(monitor).Values(&maps)
+	if err != nil {
+		fmt.Println("err!")
+	}
+	for _, m := range maps {
+		url := fmt.Sprintf("https://api.etherscan.io/api?module=account&action=tokenbalance&contractaddress=0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be&address=%s&tag=latest&apikey=", m["Address"].(string))
+		r, err := http.Get(url)
+		if err != nil {
+			fmt.Println("http.Get err", err)
+		}
+		res, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println("ioutil.ReadAll(r.Body) ", err)
+		}
+		defer r.Body.Close()
+		result := gjson.GetBytes(res, "result")
+
+		//		id, err := strconv.ParseInt(m["Id"].(string), 10, 64)
+		//		if err != nil {
+		//			fmt.Println("err!")
+		//		}
+		mni.Id = m["Id"].(int64)
+		mni.Num = result.String()
+		num, err := o.Update(&mni, "Num")
+		if err != nil {
+			fmt.Println("err!")
+		}
+		fmt.Println("update num", num)
+	}
 }

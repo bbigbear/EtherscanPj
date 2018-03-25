@@ -331,6 +331,7 @@ func StartNotificationTask() {
 			}
 			//获取list1 的数据
 			o1 := orm.NewOrm()
+			var mon models.Monitior
 			monitor := new(models.Monitior)
 			status := new(models.Status)
 			var maps_monitor []orm.Params
@@ -354,6 +355,31 @@ func StartNotificationTask() {
 						if err != nil {
 							fmt.Println("查找status失败")
 						}
+						//做余额判断
+						n1, err := decimal.NewFromString(m["Num"].(string))
+						if err != nil {
+							fmt.Println("err!")
+						}
+						n2, err := decimal.NewFromString(u["value"].(string))
+						if err != nil {
+							fmt.Println("err!")
+						}
+						var blance decimal.Decimal
+						if address == from_address {
+							//转出
+							blance = n1.Sub(n2)
+						} else {
+							blance = n1.Add(n2)
+
+						}
+						//更新余额
+						mon.Id = m["Id"].(int64)
+						mon.Num = blance.String()
+						blance_num, err := o1.Update(&mon, "Num")
+						if err != nil {
+							fmt.Println("err!")
+						}
+						fmt.Println("blance", blance_num)
 						//将数据存入data中
 						var token_data models.Data
 						token_data.BlockNumber = u["blockNumber"].(string)
@@ -364,6 +390,7 @@ func StartNotificationTask() {
 						token_data.ToAddress = to_address
 						token_data.TransactionHash = u["transactionHash"].(string)
 						token_data.Value = u["value"].(string)
+						token_data.Value = n2.Div(n1).String() //占比
 						if status_data.Status == "on" {
 							token_data.Status = "警告"
 							//获取交易value
@@ -383,6 +410,7 @@ func StartNotificationTask() {
 								t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
 								notify.Timestamp = t1
 								notify.Target = m["Name"].(string)
+								notify.Target = n2.Div(n1).String()
 								num, err := o1.Insert(&notify)
 								if err != nil {
 									fmt.Println("isnert err!")

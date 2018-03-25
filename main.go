@@ -23,6 +23,8 @@ func main() {
 	orm.RunSyncdb("default", false, true)
 	//controllers.StartNotificationTask()
 	//controllers.ScanData()
+	//controllers.UpdateBalance()
+
 	beego.Run()
 }
 
