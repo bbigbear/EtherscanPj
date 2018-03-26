@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 
+	"time"
+
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego/orm"
 )
@@ -81,9 +83,16 @@ func (this *WalletController) GetWalletMonitorData() {
 }
 
 func (this *WalletController) GetIncrease() {
-	//	a := []int{3, 5, 4, -1, 9, 11, -14}
-	//	sort.Ints(a)
-	//	fmt.Println(a)
+	//获取一周的数据
+	o := orm.NewOrm()
+	var maps []orm.Params
+	nowtime := time.Now().Format("2006-01-02 15:04:05")
+	num, err := o.Raw("select * from wallet_num WHERE timestamp between DATE_SUB(?,INTERVAL 1 WEEK) and ?", nowtime, nowtime).Values(&maps)
+	if err != nil {
+		fmt.Println("err!")
+	}
+	fmt.Println("num", num, maps)
+	this.Data["maps"] = maps
 
 	this.TplName = "wallet_increase.tpl"
 }
@@ -152,7 +161,7 @@ func (this *WalletController) GetPieData() {
 	fmt.Println("list", list1)
 	for i := 0; i < 10; i++ {
 		//reslut_list = append(reslut_list, list1[i])
-		num, err := o.QueryTable(notify).Filter("Percent", strconv.FormatFloat(list1[i], 'E', -1, 64)).Values(&maps)
+		num, err := o.QueryTable(notify).Filter("Percent", strconv.FormatFloat(list1[i], 'f', -1, 64)).Values(&maps)
 		if err != nil {
 			fmt.Println("err")
 		}

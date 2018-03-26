@@ -37,7 +37,8 @@
   <div class="layui-body">
     <!-- 内容主体区域 -->
     <div style="padding: 15px;">					
-		<div id='main' style='width:600px;height:400px;'></div>				
+		<div id='main' style='width:600px;height:400px;'></div>
+		<table id="MessageList" lay-filter="pie"></table>				
 	</div>
   </div>
   
@@ -166,36 +167,19 @@
 		}				
 	});
 			
-	  //table 渲染
-	  table.render({
-	    elem: '#MessageList1'
-	    ,height: 315
-	    ,url: '/getstockholderdata' //数据接口
-	    ,page: true //开启分页
-		,id: 'listReload'
-	    ,cols: [[ //表头
-		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'NAME', title:'姓名', width:120}
-		  ,{field:'TEL',  title:'微信号', width:150}
-		  ,{field:'TEL',  title:'手机号', width:150}
-	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
-		  ,{field:'ADDRESS',  title:'地址', width:200}
-	    ]]
-	  });
 	
 		table.render({
 		    elem: '#MessageList'
 		    ,height: 315
-		    ,url: '/getmonitordata' //数据接口
-		    ,page: true //开启分页
+		    ,url: '/getwalletpiedata' //数据接口
+		    //,page: true //开启分页
 			,id: 'listReload'
 		    ,cols: [[ //表头
-			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
-			  ,{field:'Contract',  title:'合约地址', width:150}
-		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
+		      {field:'Hash', title:'Hash', width:200}
+			  ,{field:'Name',  title:'标签', width:120}
+			  ,{field:'Target',  title:'姓名', width:150}
+		      ,{field:'Num',  title:'数量', width:150}
+			  ,{field:'Percent',  title:'占比', width:120}
 		    ]]
 		  });		
 	

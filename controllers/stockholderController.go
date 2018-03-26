@@ -27,7 +27,8 @@ func (this *StockholderController) Get() {
 
 	//this.StartNotificationTask()
 	//this.TplName = "index.tpl"
-	this.TplName = "early_warn.tpl"
+	//this.TplName = "early_warn.tpl"
+	this.TplName = "test1.tpl"
 }
 
 //新增投资者

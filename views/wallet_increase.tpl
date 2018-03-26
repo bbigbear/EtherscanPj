@@ -74,7 +74,12 @@
             },
             //横轴
             xAxis:{
-                data:["3.22","3.23","3.24","3.25","3.26","3.27"]
+				name:'七天内',
+                data:[
+					{{range .maps}}
+					{{.timestamp}},
+					{{end}}
+				]
             },
             //纵轴
             yAxis:{},
@@ -83,7 +88,11 @@
                 name:'个数',
                 //折线图
                 type:'line',
-                data:[5, 20, 36, 10, 10, 20]
+                data:[
+					{{range .maps}}
+					{{.address_num}},
+					{{end}}
+				]
             }]
         };
         //使用刚指定的配置项和数据显示图表
@@ -168,86 +177,7 @@
 		,href:'/getnotifcationmessage'
 	  }]
 	});
-	//自动加载
-	$(function(){
-		if({{.campus}}!=""){
-			$("#campus").val({{.campus}});			
-			form.render('select');	
-		}				
-	});
-			
-	  //table 渲染
-	  table.render({
-	    elem: '#MessageList1'
-	    ,height: 315
-	    ,url: '/getstockholderdata' //数据接口
-	    ,page: true //开启分页
-		,id: 'listReload'
-	    ,cols: [[ //表头
-		  {type:'checkbox', fixed: 'left'}
-	      ,{field:'NAME', title:'姓名', width:120}
-		  ,{field:'TEL',  title:'微信号', width:150}
-		  ,{field:'TEL',  title:'手机号', width:150}
-	      ,{field:'NUM',  title:'钱包剩余数量', width:120}
-		  ,{field:'ADDRESS',  title:'地址', width:200}
-	    ]]
-	  });
-	
-		table.render({
-		    elem: '#MessageList'
-		    ,height: 315
-		    ,url: '/getmonitordata' //数据接口
-		    ,page: true //开启分页
-			,id: 'listReload'
-		    ,cols: [[ //表头
-			  {type:'checkbox', fixed: 'left'}
-		      ,{field:'Id', title:'ID', width:80}
-			  ,{field:'Name',  title:'用户名称', width:150}
-			  ,{field:'Contract',  title:'合约地址', width:150}
-		      ,{field:'Address',  title:'帐号地址', width:120}
-			  ,{field:'Phone',  title:'手机', width:200}
-		    ]]
-		  });		
-	
-	//批量删除
-	$('#del').on('click',function(){				
-		var str="";
-		var checkStatus=table.checkStatus('listReload')
-		,data=checkStatus.data;
-		if(data.length==0){
-			alert("请选择要删除的数据")
-		}else{
-			for(var i=0;i<data.length;i++){
-				str+=data[i].Id+",";
-			}
-			layer.confirm('是否删除这'+data.length+'条数据?',{icon:3,title:'提示'},function(index){
-				//window.location.href="/v1/delmultidata?id="+str+"";
-				$.ajax({
-					type:"POST",
-					url:"/delmonitordata",
-					data:{
-						id:str	
-					},
-					async:false,
-					error:function(request){
-						alert("post error")						
-					},
-					success:function(res){
-						if(res.code==200){
-							alert("删除成功")	
-							//重载表格
-							table.reload('listReload', {							  
-							});												
-						}else{
-							alert("删除失败")
-						}						
-					}					
-				});				
-				layer.close(index);
-			});
-		}
-		return false;
-	});	
+		
 			
   });
 	

@@ -13,6 +13,7 @@ import (
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/toolbox"
 	"github.com/shopspring/decimal"
 	"github.com/tidwall/gjson"
 )
@@ -295,4 +296,30 @@ func UpdatePercent() {
 
 	}
 
+}
+
+//每天定时记录地址个数
+func WriteAddressNum() {
+	fmt.Println("开启记录")
+	//	每天记录一次 刷新一次 周日到周六 23:30 记录一次
+	tk2 := toolbox.NewTask("tk2", "0 30 23 * * 0-6", func() error {
+		o := orm.NewOrm()
+		monitor := new(models.Monitior)
+		var wallet models.WalletNum
+		p, _ := time.Parse("2006-01-02 15:04:05", time.Now().Format("2006-01-02 15:04:05"))
+		wallet.Timestamp = p
+		num, err := o.QueryTable(monitor).Count()
+		if err != nil {
+			fmt.Println("err!")
+		}
+		wallet.AddressNum = int(num)
+		num_insert, err := o.Insert(&wallet)
+		if err != nil {
+			fmt.Println("err!")
+		}
+		fmt.Println("insert num", num_insert)
+		return nil
+	})
+	toolbox.AddTask("tk2", tk2)
+	toolbox.StartTask()
 }
