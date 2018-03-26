@@ -8,6 +8,6 @@ type Notifcation struct {
 	Target    string
 	Style     string
 	Num       string
-	Percent   float64
+	Percent   string
 	Hash      string
 }

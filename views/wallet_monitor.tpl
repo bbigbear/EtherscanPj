@@ -154,7 +154,7 @@
 		table.render({
 		    elem: '#MessageList'
 		    ,height: 315
-		    ,url: '/getwalletmonitordata' //数据接口
+		    ,url: '/getwalletmonitordata?wallet_address={{.wallet_address}}' //数据接口
 		    //,page: true //开启分页
 			,id: 'listReload'
 		    ,cols: [[ //表头

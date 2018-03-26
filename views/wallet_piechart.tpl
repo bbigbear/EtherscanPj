@@ -60,17 +60,18 @@
         var myChart = echarts.init(document.getElementById('main'));
           //指定图表的配置项和数据
         var option = {
+			title:{
+                text:'占比前十(单位:100%)'
+            },
             series : [
 		        {
 		            name: '饼图',
 		            type: 'pie',
 		            radius: '55%',
 		            data:[
-		                {value:235, name:''},
-		                {value:274, name:''},
-		                {value:310, name:''},
-		                {value:335, name:''},
-		                {value:400, name:''}
+						{{range .list1}}
+		                {value:{{.}}, name:{{.}}},
+						{{end}}
 		            ]
 		        }
 		    ]

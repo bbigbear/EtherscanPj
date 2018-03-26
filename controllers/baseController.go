@@ -53,8 +53,8 @@ func (this *BaseController) ajaxList(msg interface{}, msgno int, count int64, da
 }
 
 // 通过两重循环过滤重复元素
-func (this *BaseController) RemoveRepBySlice(slc []string) []string {
-	result := []string{} // 存放结果
+func (this *BaseController) RemoveRepBySlice(slc []float64) []float64 {
+	result := []float64{} // 存放结果
 	for i := range slc {
 		flag := true
 		for j := range result {
@@ -248,11 +248,51 @@ func UpdateBalance() {
 		//			fmt.Println("err!")
 		//		}
 		mni.Id = m["Id"].(int64)
+		mni.Address = strings.ToLower(m["Address"].(string))
 		mni.Num = result.String()
-		num, err := o.Update(&mni, "Num")
+		num, err := o.Update(&mni, "Num", "Address")
 		if err != nil {
 			fmt.Println("err!")
 		}
 		fmt.Println("update num", num)
 	}
+}
+
+//跟新下占比
+func UpdatePercent() {
+	o := orm.NewOrm()
+	var maps []orm.Params
+	var maps_d []orm.Params
+	//var maps_n []orm.Params
+	//var data models.Data
+	var notify models.Notifcation
+	monitor := new(models.Monitior)
+	d := new(models.Data)
+	//n := new(models.Notifcation)
+
+	_, err := o.QueryTable(monitor).Values(&maps)
+	if err != nil {
+		fmt.Println("err!")
+	}
+	for _, m := range maps {
+		_, err := o.QueryTable(d).Filter("FromAddress", m["Address"].(string)).Values(&maps_d)
+		if err != nil {
+			fmt.Println("err!")
+		}
+		for _, d := range maps_d {
+			notify.Id = int(d["Id"].(int64))
+			//if m["Num"].(string) == "0" {
+			//更新占比data & notify
+			notify.Percent = "from"
+			n1, err := o.Update(&notify, "Percent")
+			if err != nil {
+				fmt.Println("err!")
+			}
+			fmt.Println("update n1", n1)
+			//}
+
+		}
+
+	}
+
 }

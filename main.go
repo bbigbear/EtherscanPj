@@ -24,6 +24,7 @@ func main() {
 	//controllers.StartNotificationTask()
 	//controllers.ScanData()
 	//controllers.UpdateBalance()
+	//controllers.UpdatePercent()
 
 	beego.Run()
 }

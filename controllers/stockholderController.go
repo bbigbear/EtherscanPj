@@ -342,7 +342,8 @@ func StartNotificationTask() {
 			}
 			fmt.Println("get list ok! num", num1)
 			for _, m := range maps_monitor {
-				address := m["Address"].(string)
+				//address := m["Address"].(string)
+				address := strings.ToLower(m["Address"].(string))
 				fmt.Println("address", address)
 				if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
 					fmt.Println("contracct", m["Contract"].(string), constact_address)
@@ -364,6 +365,10 @@ func StartNotificationTask() {
 						if err != nil {
 							fmt.Println("err!")
 						}
+						zero, err := decimal.NewFromString("0")
+						if err != nil {
+							fmt.Println("err!")
+						}
 						var blance decimal.Decimal
 						if address == from_address {
 							//转出
@@ -379,7 +384,7 @@ func StartNotificationTask() {
 						if err != nil {
 							fmt.Println("err!")
 						}
-						fmt.Println("blance", blance_num)
+						fmt.Println("updata blance", blance_num)
 						//将数据存入data中
 						var token_data models.Data
 						token_data.BlockNumber = u["blockNumber"].(string)
@@ -390,7 +395,9 @@ func StartNotificationTask() {
 						token_data.ToAddress = to_address
 						token_data.TransactionHash = u["transactionHash"].(string)
 						token_data.Value = u["value"].(string)
-						token_data.Value = n2.Div(n1).String() //占比
+						if !n1.Equal(zero) {
+							token_data.Percent = n2.Div(n1).String() //占比
+						}
 						if status_data.Status == "on" {
 							token_data.Status = "警告"
 							//获取交易value
@@ -410,7 +417,9 @@ func StartNotificationTask() {
 								t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
 								notify.Timestamp = t1
 								notify.Target = m["Name"].(string)
-								notify.Target = n2.Div(n1).String()
+								if !n1.Equal(zero) {
+									notify.Percent = n2.Div(n1).String()
+								}
 								num, err := o1.Insert(&notify)
 								if err != nil {
 									fmt.Println("isnert err!")
