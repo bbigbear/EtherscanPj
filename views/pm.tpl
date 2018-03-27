@@ -166,6 +166,7 @@
 		  ,{field:'num',  title:'变动数量', width:150}
 		  ,{field:'percent',  title:'占比', width:80}
 		  ,{field:'hash',  title:'哈希值', width:250}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });
 							

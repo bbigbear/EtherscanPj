@@ -165,7 +165,8 @@
 			  ,{field:'to_address',  title:'To', width:200}
 			  ,{field:'value',  title:'数量', width:200}
 			  ,{field:'percent',  title:'交易占比', width:200}
-			  ,{field:'balance',  title:'余额', width:200}
+			  //,{field:'balance',  title:'余额', width:200}
+			  ,{field:'transaction_status',  title:'交易状态', width:100}
 		    ]]
 		  });		
 	

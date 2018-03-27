@@ -180,6 +180,7 @@
 		  ,{field:'value',  title:'数量', width:200}
 		  ,{field:'percent',  title:'总量占比', width:100}
 		  ,{field:'status',  title:'预警状态', width:100}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });
 	
@@ -197,6 +198,7 @@
 		  ,{field:'value',  title:'数量', width:200}
 		  ,{field:'percent',  title:'总量占比', width:100}
 		  ,{field:'status',  title:'预警状态', width:100}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });
 	  table.render({
@@ -213,6 +215,7 @@
 		  ,{field:'value',  title:'数量', width:200}
 		  ,{field:'percent',  title:'总量占比', width:100}
 		  ,{field:'status',  title:'预警状态', width:100}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });
 	  table.render({
@@ -229,6 +232,7 @@
 		  ,{field:'value',  title:'数量', width:200}
 		  ,{field:'percent',  title:'总量占比', width:100}
 		  ,{field:'status',  title:'预警状态', width:100}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });
 	  table.render({
@@ -245,6 +249,7 @@
 		  ,{field:'value',  title:'数量', width:200}
 		  ,{field:'percent',  title:'总量占比', width:100}
 		  ,{field:'status',  title:'预警状态', width:100}
+		  ,{field:'transaction_status',  title:'交易状态', width:100}
 	    ]]
 	  });	
 		

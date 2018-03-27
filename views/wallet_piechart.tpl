@@ -73,6 +73,9 @@
 						{{range .list1}}
 		                {value:{{.}}, name:{{.}}},
 						{{end}}
+						{{range .list}}
+		                {value:{{.id}}, name:{{.name}}},
+						{{end}}
 		            ]
 		        }
 		    ]

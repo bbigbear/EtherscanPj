@@ -25,10 +25,18 @@ type StockholderController struct {
 
 func (this *StockholderController) Get() {
 
+	//pm
+	o := orm.NewOrm()
+	moniter := new(models.Monitior)
+	num, err := o.QueryTable(moniter).Count()
+	if err != nil {
+		fmt.Println("err!")
+	}
+	this.Data["count"] = num
 	//this.StartNotificationTask()
 	//this.TplName = "index.tpl"
-	//this.TplName = "early_warn.tpl"
-	this.TplName = "test1.tpl"
+	this.TplName = "pm.tpl"
+	//this.TplName = "test1.tpl"
 }
 
 //新增投资者
@@ -82,6 +90,16 @@ func (this *StockholderController) AddMonitorAction() {
 }
 func (this *StockholderController) GetEarlyWarn() {
 	//获取action
+	//获取值
+	o := orm.NewOrm()
+	status := new(models.Status)
+	var status_data models.Status
+	err := o.QueryTable(status).Filter("Id", 1).One(&status_data)
+	if err != nil {
+		fmt.Println("查找status失败")
+	}
+	this.Data["value"] = status_data.Svalue
+	fmt.Println("value", status_data.Svalue)
 	this.TplName = "early_warn.tpl"
 }
 

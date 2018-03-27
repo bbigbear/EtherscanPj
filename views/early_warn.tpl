@@ -46,7 +46,7 @@
 		  <div class="layui-form-item">
 				<div class="layui-form-mid">单笔交易超过</div>
 			    <div class="layui-input-inline" style="width: 200px;">
-					 <input type="text" name="single_num" id="single_num" value="{{.Price}}" autocomplete="off" class="layui-input">
+					 <input type="text" name="single_num" id="single_num" value="{{.value}}" autocomplete="off" class="layui-input">
 				</div>
 				<!--<div class="layui-form-mid">or</div>
 				<div class="layui-input-inline" style="width: 50px;">
@@ -115,6 +115,15 @@
 		,$=layui.jquery
 		,table=layui.table;
 	  //layer.msg("你好");
+	//自动加载
+	$(function(){
+		//layer.msg({{.campus}});
+		if({{.campus}}!=""){
+			//layer.msg({{.campus}});
+			$("#campus").val({{.value}});
+		}				
+	});
+	
 	//tree 列表
 	layui.tree({
 	  elem: '#tree' //传入元素选择器'

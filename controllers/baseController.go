@@ -71,6 +71,24 @@ func (this *BaseController) RemoveRepBySlice(slc []float64) []float64 {
 	return result
 }
 
+// 通过两重循环过滤重复元素 string
+func (this *BaseController) RemoveRepBySliceString(slc []string) []string {
+	result := []string{} // 存放结果
+	for i := range slc {
+		flag := true
+		for j := range result {
+			if slc[i] == result[j] {
+				flag = false // 存在重复元素，标识为false
+				break
+			}
+		}
+		if flag { // 标识为false，不添加进结果
+			result = append(result, slc[i])
+		}
+	}
+	return result
+}
+
 // 图片接口
 func (this *BaseController) PutFileImg() {
 	h, err := this.GetFiles("file")
@@ -322,4 +340,35 @@ func WriteAddressNum() {
 	})
 	toolbox.AddTask("tk2", tk2)
 	toolbox.StartTask()
+}
+
+//跟新下交易状态
+func UpdateTransactionStatus() {
+	o := orm.NewOrm()
+	var maps []orm.Params
+	//var maps_n []orm.Params
+	//var data models.Data
+	var notify models.Notifcation
+	n := new(models.Notifcation)
+	//n := new(models.Notifcation)
+
+	_, err := o.QueryTable(n).Values(&maps)
+	if err != nil {
+		fmt.Println("err!")
+	}
+	for _, m := range maps {
+		notify.Id = int(m["Id"].(int64))
+		if m["Percent"].(string) == "" {
+			notify.TransactionStatus = "转入"
+
+		} else {
+			notify.TransactionStatus = "转出"
+		}
+		n1, err := o.Update(&notify, "TransactionStatus")
+		if err != nil {
+			fmt.Println("err!")
+		}
+		fmt.Println("update n1", n1)
+	}
+
 }
