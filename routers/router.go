@@ -9,6 +9,8 @@ import (
 func init() {
 	beego.Router("/", &controllers.StockholderController{})
 	beego.Router("/login", &controllers.LoginController{})
+	beego.Router("/logout", &controllers.LoginController{}, "*:Logout")
+	beego.Router("/login_action", &controllers.LoginController{}, "post:LoginAction")
 	beego.Router("/addmonitor", &controllers.StockholderController{}, "*:AddMonitor")
 	beego.Router("/addmonitor_action", &controllers.StockholderController{}, "post:AddMonitorAction")
 	beego.Router("/getmonitordata", &controllers.StockholderController{}, "*:GetMonitorData")

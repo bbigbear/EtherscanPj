@@ -25,6 +25,10 @@ type StockholderController struct {
 
 func (this *StockholderController) Get() {
 
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//pm
 	o := orm.NewOrm()
 	moniter := new(models.Monitior)
@@ -41,6 +45,10 @@ func (this *StockholderController) Get() {
 
 //新增投资者
 func (this *StockholderController) AddMonitor() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	this.TplName = "add_monitor.tpl"
 }
 
@@ -89,6 +97,10 @@ func (this *StockholderController) AddMonitorAction() {
 
 }
 func (this *StockholderController) GetEarlyWarn() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//获取action
 	//获取值
 	o := orm.NewOrm()
@@ -121,10 +133,18 @@ func (this *StockholderController) EarlyWarnAction() {
 }
 
 func (this *StockholderController) GetNotifcationMessage() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	this.TplName = "notifcation_message.tpl"
 }
 
 func (this *StockholderController) GetStockHolder() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	this.TplName = "investor_manage.tpl"
 }
 

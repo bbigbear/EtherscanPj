@@ -14,7 +14,10 @@ type PmController struct {
 }
 
 func (this *PmController) Get() {
-
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//pm
 	o := orm.NewOrm()
 	moniter := new(models.Monitior)
@@ -28,6 +31,10 @@ func (this *PmController) Get() {
 
 func (this *PmController) RealTimeData() {
 
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	this.TplName = "realtime_data.tpl"
 }
 

@@ -18,6 +18,10 @@ type WalletController struct {
 }
 
 func (this *WalletController) Get() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//wallet
 	o := orm.NewOrm()
 	moniter := new(models.Monitior)
@@ -30,6 +34,10 @@ func (this *WalletController) Get() {
 	this.TplName = "wallet.tpl"
 }
 func (this *WalletController) GetWalletMonitor() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//获取钱包地址
 	wallet_address := this.Input().Get("wallet_address")
 	this.Data["wallet_address"] = wallet_address
@@ -85,6 +93,10 @@ func (this *WalletController) GetWalletMonitorData() {
 }
 
 func (this *WalletController) GetIncrease() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//获取一周的数据
 	o := orm.NewOrm()
 	var maps []orm.Params
@@ -100,6 +112,10 @@ func (this *WalletController) GetIncrease() {
 }
 
 func (this *WalletController) GetPie() {
+	if this.GetSession("islogin") != 1 {
+		fmt.Println("未登录")
+		this.Redirect("/login", 302)
+	}
 	//获取占比前10名
 	o := orm.NewOrm()
 	data := new(models.Data)
