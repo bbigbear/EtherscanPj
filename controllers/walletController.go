@@ -10,7 +10,7 @@ import (
 
 	_ "github.com/Go-SQL-Driver/MySQL"
 	"github.com/astaxie/beego/orm"
-	"github.com/shopspring/decimal"
+	//"github.com/shopspring/decimal"
 )
 
 type WalletController struct {
@@ -121,10 +121,11 @@ func (this *WalletController) GetPie() {
 	data := new(models.Data)
 	var maps []orm.Params
 	var list []float64
-	var reslut_list []float64
+	//var reslut_list []float64
+	var name_list []string
 	var reslut_name_list []map[string]interface{}
 	//	var reslut_num_list []float64
-	notify := new(models.Notifcation)
+	//notify := new(models.Notifcation)
 	num, err := o.QueryTable(data).Values(&maps)
 	if err != nil {
 		fmt.Println("err!")
@@ -140,59 +141,30 @@ func (this *WalletController) GetPie() {
 		}
 	}
 	sort.Sort(sort.Reverse(sort.Float64Slice(list)))
-	//判断第10位是否为1
-	var value_list []string
-	var name_list []string
-	if list[9] == float64(1) {
-		num, err := o.QueryTable(notify).Filter("Percent", "1").Values(&maps)
+	l := list[0:10]
+	list1 := this.RemoveRepBySliceFloat(l)
+	for i := 0; i < len(list1); i++ {
+		//reslut_list = append(reslut_list, list1[i])
+		num, err := o.QueryTable(data).Filter("Percent", strconv.FormatFloat(list1[i], 'f', -1, 64)).Values(&maps)
 		if err != nil {
-			fmt.Println("err!")
+			fmt.Println("err")
 		}
 		fmt.Println("num", num)
 		for _, m := range maps {
-			value_list = append(value_list, m["Num"].(string))
-			name_list = append(name_list, m["Target"].(string))
+			name_list = append(name_list, m["Name"].(string))
 		}
-		len1 := len(value_list)
-		//冒泡法
-		for i := 0; i < len1; i++ {
-			for j := i + 1; j < len1; j++ {
-				n1, err := decimal.NewFromString(value_list[i])
-				if err != nil {
-					fmt.Println("err!")
-				}
-				n2, err := decimal.NewFromString(value_list[j])
-				if err != nil {
-					fmt.Println("err!")
-				}
-				if n1.LessThan(n2) {
-					value_list[i], value_list[j] = value_list[j], value_list[i]
-					name_list[i], name_list[j] = name_list[j], name_list[i]
-				}
-			}
-		}
-		fmt.Println("value_list", value_list)
-		fmt.Println("name_list", name_list)
-		for i := 0; i < 10; i++ {
-			//			reslut_list = append(reslut_list, float64(1))
-			//			reslut_name_list = append(reslut_name_list, name_list[i])
-			out := make(map[string]interface{})
-			out["id"] = float64(1)
-			out["name"] = name_list[i]
-			reslut_name_list = append(reslut_name_list, out)
-		}
-		this.Data["list"] = reslut_name_list
-
-	} else {
-		//	list1 := this.RemoveRepBySlice(list)
-		//	//sort.Float64s(list)
-		//fmt.Println("list", list1)
-		for i := 0; i < 10; i++ {
-			reslut_list = append(reslut_list, list[i])
-		}
-		this.Data["list1"] = reslut_list
-
 	}
+	fmt.Println("name_list", name_list)
+	fmt.Println("l", l)
+	for i := 0; i < 10; i++ {
+
+		out := make(map[string]interface{})
+		out["id"] = l[i]
+		out["name"] = name_list[i]
+		reslut_name_list = append(reslut_name_list, out)
+	}
+	this.Data["list"] = reslut_name_list
+	//	}
 
 	this.TplName = "wallet_piechart.tpl"
 }
@@ -202,9 +174,10 @@ func (this *WalletController) GetPieData() {
 	o := orm.NewOrm()
 	data := new(models.Data)
 	//下次改为data
-	notify := new(models.Notifcation)
+	//notify := new(models.Notifcation)
 	var maps []orm.Params
 	var list []float64
+	//var name_list []string
 	//var reslut_list []float64
 	var reslut_maps []map[string]interface{}
 	num, err := o.QueryTable(data).Values(&maps)
@@ -222,80 +195,81 @@ func (this *WalletController) GetPieData() {
 		}
 	}
 	sort.Sort(sort.Reverse(sort.Float64Slice(list)))
-	//判断第10位是否为1
-	var value_list []string
-	var name_list []string
-	if list[9] == float64(1) {
-		num, err := o.QueryTable(notify).Filter("Percent", "1").Values(&maps)
+	list1 := this.RemoveRepBySliceFloat(list[0:10])
+	//	//判断第10位是否为1
+	//	var value_list []string
+	//	var name_list []string
+	//	if list[9] == float64(1) {
+	//		num, err := o.QueryTable(notify).Filter("Percent", "1").Values(&maps)
+	//		if err != nil {
+	//			fmt.Println("err!")
+	//		}
+	//		fmt.Println("num", num)
+	//		for _, m := range maps {
+	//			value_list = append(value_list, m["Num"].(string))
+	//			name_list = append(name_list, m["Target"].(string))
+	//		}
+	//		len1 := len(value_list)
+	//		//冒泡法
+	//		for i := 0; i < len1; i++ {
+	//			for j := i + 1; j < len1; j++ {
+	//				n1, err := decimal.NewFromString(value_list[i])
+	//				if err != nil {
+	//					fmt.Println("err!")
+	//				}
+	//				n2, err := decimal.NewFromString(value_list[j])
+	//				if err != nil {
+	//					fmt.Println("err!")
+	//				}
+	//				if n1.LessThan(n2) {
+	//					value_list[i], value_list[j] = value_list[j], value_list[i]
+	//					name_list[i], name_list[j] = name_list[j], name_list[i]
+	//				}
+	//			}
+	//		}
+	//		fmt.Println("value_list", value_list)
+	//		fmt.Println("name_list", name_list)
+	//		for i := 0; i < 10; i++ {
+	//			//reslut_list = append(reslut_list, list1[i])
+	//			num, err := o.QueryTable(notify).Filter("Percent", "1").Filter("Target", name_list[i]).Values(&maps)
+	//			if err != nil {
+	//				fmt.Println("err")
+	//			}
+	//			fmt.Println("num", num)
+	//			for _, m := range maps {
+	//				out := make(map[string]interface{})
+	//				for k, v := range m {
+	//					out[k] = v
+	//				}
+	//				//fmt.Println("out", out)
+	//				reslut_maps = append(reslut_maps, out)
+	//				//fmt.Println("reslut", reslut)
+	//			}
+	//		}
+
+	//	} else {
+	//list1 := this.RemoveRepBySlice(list)
+	//sort.Float64s(list)
+	//fmt.Println("list", list1)
+	for i := 0; i < len(list1); i++ {
+		//reslut_list = append(reslut_list, list1[i])
+		num, err := o.QueryTable(data).Filter("Percent", strconv.FormatFloat(list1[i], 'f', -1, 64)).Values(&maps)
 		if err != nil {
-			fmt.Println("err!")
+			fmt.Println("err")
 		}
 		fmt.Println("num", num)
 		for _, m := range maps {
-			value_list = append(value_list, m["Num"].(string))
-			name_list = append(name_list, m["Target"].(string))
+			out := make(map[string]interface{})
+			for k, v := range m {
+				out[k] = v
+			}
+			//fmt.Println("out", out)
+			reslut_maps = append(reslut_maps, out)
+			//fmt.Println("reslut", reslut)
 		}
-		len1 := len(value_list)
-		//冒泡法
-		for i := 0; i < len1; i++ {
-			for j := i + 1; j < len1; j++ {
-				n1, err := decimal.NewFromString(value_list[i])
-				if err != nil {
-					fmt.Println("err!")
-				}
-				n2, err := decimal.NewFromString(value_list[j])
-				if err != nil {
-					fmt.Println("err!")
-				}
-				if n1.LessThan(n2) {
-					value_list[i], value_list[j] = value_list[j], value_list[i]
-					name_list[i], name_list[j] = name_list[j], name_list[i]
-				}
-			}
-		}
-		fmt.Println("value_list", value_list)
-		fmt.Println("name_list", name_list)
-		for i := 0; i < 10; i++ {
-			//reslut_list = append(reslut_list, list1[i])
-			num, err := o.QueryTable(notify).Filter("Percent", "1").Filter("Target", name_list[i]).Values(&maps)
-			if err != nil {
-				fmt.Println("err")
-			}
-			fmt.Println("num", num)
-			for _, m := range maps {
-				out := make(map[string]interface{})
-				for k, v := range m {
-					out[k] = v
-				}
-				//fmt.Println("out", out)
-				reslut_maps = append(reslut_maps, out)
-				//fmt.Println("reslut", reslut)
-			}
-		}
-
-	} else {
-		//list1 := this.RemoveRepBySlice(list)
-		//sort.Float64s(list)
-		//fmt.Println("list", list1)
-		for i := 0; i < 10; i++ {
-			//reslut_list = append(reslut_list, list1[i])
-			num, err := o.QueryTable(notify).Filter("Percent", strconv.FormatFloat(list[i], 'f', -1, 64)).Values(&maps)
-			if err != nil {
-				fmt.Println("err")
-			}
-			fmt.Println("num", num)
-			for _, m := range maps {
-				out := make(map[string]interface{})
-				for k, v := range m {
-					out[k] = v
-				}
-				//fmt.Println("out", out)
-				reslut_maps = append(reslut_maps, out)
-				//fmt.Println("reslut", reslut)
-			}
-		}
-
 	}
+
+	//	}
 
 	//this.Data["list1"] = reslut_list
 	//根据

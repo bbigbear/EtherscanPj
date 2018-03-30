@@ -69,10 +69,7 @@
 		            name: '饼图',
 		            type: 'pie',
 		            radius: '55%',
-		            data:[
-						{{range .list1}}
-		                {value:{{.}}, name:{{.}}},
-						{{end}}
+		            data:[				
 						{{range .list}}
 		                {value:{{.id}}, name:{{.name}}},
 						{{end}}
@@ -169,8 +166,7 @@
 			form.render('select');	
 		}				
 	});
-			
-	
+				
 		table.render({
 		    elem: '#MessageList'
 		    ,height: 315
@@ -178,11 +174,11 @@
 		    //,page: true //开启分页
 			,id: 'listReload'
 		    ,cols: [[ //表头
-		      {field:'Hash', title:'Hash', width:200}
-			  ,{field:'Name',  title:'标签', width:120}
-			  ,{field:'Target',  title:'姓名', width:150}
-		      ,{field:'Num',  title:'数量', width:150}
-			  ,{field:'Percent',  title:'占比', width:120}
+		      {field:'TransactionHash', title:'Hash', width:200}
+			  ,{field:'Name1',  title:'标签', width:120}
+			  ,{field:'Name',  title:'姓名', width:150}
+		      ,{field:'Value',  title:'数量', width:150}
+			  ,{field:'Percent',  title:'占比(100%)', width:120}
 		    ]]
 		  });		
 	

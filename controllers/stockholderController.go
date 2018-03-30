@@ -384,7 +384,7 @@ func StartNotificationTask() {
 				//address := m["Address"].(string)
 				address := strings.ToLower(m["Address"].(string))
 				fmt.Println("address", address)
-				if constact_address == "0x95408930d6323ac7aa69e6c2cbfe58774d565fa8" || constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
+				if constact_address == "0xa9ec9f5c1547bd5b0247cf6ae3aab666d10948be" {
 					fmt.Println("contracct", m["Contract"].(string), constact_address)
 					fmt.Println("address:", to_address, from_address, address)
 					if address == to_address || address == from_address {
@@ -404,7 +404,7 @@ func StartNotificationTask() {
 						if err != nil {
 							fmt.Println("err!")
 						}
-						zero, err := decimal.NewFromString("0")
+						totalsupply, err := decimal.NewFromString(status_data.Totalsupply) //减少2个0就是百分数
 						if err != nil {
 							fmt.Println("err!")
 						}
@@ -434,9 +434,8 @@ func StartNotificationTask() {
 						token_data.ToAddress = to_address
 						token_data.TransactionHash = u["transactionHash"].(string)
 						token_data.Value = u["value"].(string)
-						if !n1.Equal(zero) {
-							token_data.Percent = n2.Div(n1).String() //占比
-						}
+						token_data.Percent = n2.Div(totalsupply).String() //占比
+						token_data.Name = m["Name"].(string)
 						if status_data.Status == "on" {
 							token_data.Status = "警告"
 							//获取交易value
@@ -456,12 +455,10 @@ func StartNotificationTask() {
 								t1, _ := time.Parse("2006-01-02 15:04:05", u["timestamp"].(string))
 								notify.Timestamp = t1
 								notify.Target = m["Name"].(string)
-								if !n1.Equal(zero) {
-									notify.Percent = n2.Div(n1).String()
-								}
+								token_data.Percent = n2.Div(totalsupply).String() //占比
 								num, err := o1.Insert(&notify)
 								if err != nil {
-									fmt.Println("isnert err!")
+									fmt.Println("insert err!")
 								}
 								fmt.Println("insert id", num)
 							}
@@ -471,7 +468,6 @@ func StartNotificationTask() {
 							fmt.Println("插入失败")
 						}
 						fmt.Println("插入data成功num", num2)
-
 					}
 				}
 			}

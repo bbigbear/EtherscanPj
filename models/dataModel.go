@@ -14,4 +14,5 @@ type Data struct {
 	Percent           string
 	Status            string
 	TransactionStatus string
+	Name              string
 }

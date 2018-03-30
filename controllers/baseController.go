@@ -54,7 +54,7 @@ func (this *BaseController) ajaxList(msg interface{}, msgno int, count int64, da
 }
 
 // 通过两重循环过滤重复元素
-func (this *BaseController) RemoveRepBySlice(slc []float64) []float64 {
+func (this *BaseController) RemoveRepBySliceFloat(slc []float64) []float64 {
 	result := []float64{} // 存放结果
 	for i := range slc {
 		flag := true
